@@ -1,5 +1,7 @@
 from django.db import models
 from django.core.exceptions import ValidationError
+from django.utils import timezone
+from users.models import User
 
 # Create your models here.
 class NameValues(models.TextChoices):
@@ -26,4 +28,21 @@ class Role(models.Model):
                 check=models.Q(name__in=[choice for choice in NameValues.values]),
                 name="valid_name_value")
         ]
+
+class Project(models.Model):
+    """
+    This model is projects created by user when he wants to handle some translations
+    """
+    name = models.CharField(max_length=40, null=False, blank=False)
+    description = models.TextField( blank=True)
+    creator = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True
+    )
+    creation_date = models.DateTimeField(default=timezone.now, null=False)
+
+
+    #TODO: créer un champ template_file qui sera une clef étrangère vers le modèle
+    # Translation_file
         
