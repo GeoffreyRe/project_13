@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'projects.apps.ProjectsConfig'
+    'projects.apps.ProjectsConfig',
+    'users'
 ]
 
 MIDDLEWARE = [
@@ -108,7 +109,9 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
+# we define the user model to user
+# By default, the user model is auth.user
+AUTH_USER_MODEL = 'users.User'
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/
 
