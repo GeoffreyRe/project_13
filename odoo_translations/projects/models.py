@@ -43,7 +43,10 @@ class Project(models.Model):
         related_name="projects_created"
     )
     creation_date = models.DateTimeField(default=timezone.now, null=False)
-
+    template_file = models.OneToOneField('translations.TranslationFile',
+                                        on_delete=models.SET_NULL,
+                                        related_name="project_where_template",
+                                        null=True)
 
     #TODO: créer un champ template_file qui sera une clef étrangère vers le modèle
     # Translation_file
