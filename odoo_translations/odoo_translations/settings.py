@@ -42,7 +42,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'projects.apps.ProjectsConfig',
-    'users'
+    'users',
+    'translations.apps.TranslationsConfig'
 ]
 
 MIDDLEWARE = [
@@ -130,3 +131,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# MEDIA_ROOT is used to store files on disk
+MEDIA_ROOT = os.path.join(BASE_DIR, 'translation_files')

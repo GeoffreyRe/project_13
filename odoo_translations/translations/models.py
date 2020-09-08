@@ -25,9 +25,12 @@ class TranslationFile(models.Model):
         filename : the name of the file that has been uploaded
         """
         project_directory_name = str(instance.project.id) + "_" + instance.project.name
+        # the file must have .pot if it is a template file
+        # for a regular file, is 
         extension = ".pot" if instance.is_template == True else ".po"
-        file_name = instance.translated_language + extension
-        return "{0}/{1}".format(project_directory_name, file_name)
+        file_name = instance.translated_language if not instance.is_template else "template"
+        complete_name = file_name + extension
+        return "{0}/{1}".format(project_directory_name, complete_name)
 
     # file wich will be uploaded
     original_file = models.FileField(upload_to=get_file_location, null=False)
