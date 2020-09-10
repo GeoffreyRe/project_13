@@ -125,8 +125,8 @@ class TranslationLine(models.Model):
                                 )
     instance = models.ForeignKey(
         Instance,
-        ondelete=models.PROTECT,
-        null=False,
-        blank=False
+        on_delete=models.PROTECT,
+        blank=False,
+        null=False
         )
 
