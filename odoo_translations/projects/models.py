@@ -46,10 +46,12 @@ class Project(models.Model):
     template_file = models.OneToOneField('translations.TranslationFile',
                                         on_delete=models.SET_NULL,
                                         related_name="project_where_template",
-                                        null=True)
+                                        null=True,
+                                        blank=True)
+    
+    def __str__(self):
+        return self.name
 
-    #TODO: créer un champ template_file qui sera une clef étrangère vers le modèle
-    # Translation_file
 class Invitation(models.Model):
 
     project = models.ForeignKey(
@@ -79,6 +81,12 @@ class Invitation(models.Model):
         related_name="project_invitations_send"
     )
 
+    def __str__(self):
+        return "Invitation projet {} : {} invite {} en tant que {}".format(self.project.name,
+                                                                        self.inviting_user.username,
+                                                                        self.user.username,
+                                                                        self.user_role.name)
+
 class UserProject(models.Model):
     """
     This model is a ManyToMany table between User and Project. Indeed,
@@ -106,6 +114,10 @@ class UserProject(models.Model):
         null=True,
         related_name="project_linked"
     )
+
+    def __str__(self):
+        return "l'utilisateur {} a le rôle {} sur le projet \"{}\"".format(self.user.username, 
+                                                                            self.role.name, self.project.name)
 
     class Meta:
         # we want to make the tuple (project_id, user_id) a composite primary_key

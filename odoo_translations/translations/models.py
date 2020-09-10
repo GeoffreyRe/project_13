@@ -30,11 +30,13 @@ class TranslationFile(models.Model):
         extension = ".pot" if instance.is_template == True else ".po"
         file_name = instance.translated_language if not instance.is_template else "template"
         complete_name = file_name + extension
-        return "{0}/{1}".format(project_directory_name, complete_name)
+        return "translation_files/{0}/{1}".format(project_directory_name, complete_name)
 
     # file wich will be uploaded
     original_file = models.FileField(upload_to=get_file_location, null=False)
 
+    def __str__(self):
+        return "fichier de traduction : {}".format(self.name)
 
 class TranslationBlock(models.Model):
     file = models.ForeignKey(TranslationFile,
@@ -43,6 +45,9 @@ class TranslationBlock(models.Model):
                             related_name="translation_blocks")
     original_text = models.TextField(null=False, blank=False)
     translated_text = models.TextField(null=True)
+
+    def __str__(self):
+        return "block de traduction numéro {} du fichier {}".format(self.id, self.file.name)
 
 class LineType(models.Model):
     """
@@ -60,6 +65,8 @@ class LineType(models.Model):
                             null=False,
                             blank=False,
                             unique=True)
+    def __str__(self):
+        return "type de ligne : {}".format(self.name)
 class InstanceType(models.Model):
     """
     This model defines the type of an instance
@@ -75,6 +82,9 @@ class InstanceType(models.Model):
     - other
     """
     name = models.CharField(max_length=60)
+
+    def __str__(self):
+        return "type d'instance : {}".format(self.name)
 
 class Instance(models.Model):
     """
@@ -98,6 +108,8 @@ class Instance(models.Model):
                             related_name="instance_childs",
                             null=True
                             )
+    def __str__(self):
+        sentence = "instance {} de type {}".format(self.name, self.instance_type.name)
 
 class TranslationLine(models.Model):
     block = models.ForeignKey(TranslationBlock,
@@ -111,3 +123,10 @@ class TranslationLine(models.Model):
                                 related_name="translation_lines",
                                 null=False
                                 )
+    instance = models.ForeignKey(
+        Instance,
+        ondelete=models.PROTECT,
+        null=False,
+        blank=False
+        )
+

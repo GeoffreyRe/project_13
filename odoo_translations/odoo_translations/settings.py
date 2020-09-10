@@ -133,4 +133,5 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 # MEDIA_ROOT is used to store files on disk
-MEDIA_ROOT = os.path.join(BASE_DIR, 'translation_files')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
