@@ -106,17 +106,22 @@ class Instance(models.Model):
                             "self",
                             on_delete = models.CASCADE,
                             related_name="instance_childs",
-                            null=True
+                            null=True,
+                            blank=True
                             )
     def __str__(self):
         sentence = "instance {} de type {}".format(self.name, self.instance_type.name)
+        if self.parent is not None:
+            sentence += " et enfant de l'instance {} (type {})".format(self.parent.name, self.parent.instance_type.name)
+
+        return sentence
 
 class TranslationLine(models.Model):
     block = models.ForeignKey(TranslationBlock,
                             on_delete=models.CASCADE,
                             related_name="translation_lines")
     in_translation_file = models.BooleanField(null=False)
-    in_template_file = models.BooleanField(null=False)
+    in_template_file = models.BooleanField(null=True)
     line_type = models.ForeignKey(
                                 LineType,
                                 on_delete=models.PROTECT,
@@ -129,4 +134,7 @@ class TranslationLine(models.Model):
         blank=False,
         null=False
         )
+    
+    def __str__(self):
+        return "ligne de traduction numéro {}".format(self.id)
 
