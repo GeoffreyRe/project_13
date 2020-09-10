@@ -81,7 +81,7 @@ class InstanceType(models.Model):
     - ir.code.position
     - other
     """
-    name = models.CharField(max_length=60)
+    name = models.CharField(max_length=60,unique=True)
 
     def __str__(self):
         return "type d'instance : {}".format(self.name)
