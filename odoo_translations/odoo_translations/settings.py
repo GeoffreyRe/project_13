@@ -61,7 +61,9 @@ ROOT_URLCONF = 'odoo_translations.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+            # This line adds the directory "templates" wich is a subdirectory of variable BASE_DIR
+            os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
