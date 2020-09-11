@@ -1,4 +1,11 @@
 from django.db import models
+from django.db.models.signals import post_delete
+from django.dispatch import receiver 
+import os
+import logging
+
+
+logger = logging.getLogger(__name__)
 
 # Create your models here.
 class TranslationFile(models.Model):
@@ -33,10 +40,36 @@ class TranslationFile(models.Model):
         return "translation_files/{0}/{1}".format(project_directory_name, complete_name)
 
     # file wich will be uploaded
+    # warning : when an instance get deleted, the file is not deleted so we have to create
+    # a method that deletes the file ! (see signals)
     original_file = models.FileField(upload_to=get_file_location, null=False)
 
     def __str__(self):
         return "fichier de traduction : {}".format(self.name)
+
+# we will create a function that receives a signal when an instance
+# of TranslationFile is deleted. This function will delete the file
+# associated with this instance because Django doesn't do it automatically.
+@receiver(post_delete, sender=TranslationFile)
+def delete_file_associated_with_TranslationFile(sender, instance, **kwargs):
+    """
+    This function will delete the file associated with TranslationFile
+    """
+    if (instance.original_file is not None) and os.path.exists(os.path.abspath(instance.original_file.path)):
+        absolute_path = os.path.abspath(instance.original_file.path)
+        # si l'instance a un fichier de traduction associé et que le chemin est bon
+        if os.path.isfile(absolute_path):
+            # on vérifie que c'est bien un fichier
+            # on supprime le fichier
+            try:
+                os.remove(absolute_path)
+                logger.info("le fichier de l'instance {} a bien été supprimée".format(instance))
+            except OSError:
+                logger.error("Un problème est survenu lors de la suppression du fichier de {}".format(instance))
+        else:
+            logger.error("Le chemin spécifié pour l'instance {} correspond à un dossier".format(instance))
+    else:
+        logger.error("L'instance {} n'a pas de fichier lié ou le chemin spécifié pour le fichier n'existe pas".format(instance))
 
 class TranslationBlock(models.Model):
     file = models.ForeignKey(TranslationFile,

@@ -30,7 +30,8 @@ class Role(models.Model):
         ]
 
     def __str__(self):
-        return self.name
+        return self.get_name_display()
+
 class Project(models.Model):
     """
     This model is projects created by user when he wants to handle some translations
@@ -119,7 +120,7 @@ class UserProject(models.Model):
 
     def __str__(self):
         return "l'utilisateur {} a le rôle {} sur le projet \"{}\"".format(self.user.username, 
-                                                                            self.user_role.name, self.project.name)
+                                                                            self.user_role.get_name_display(), self.project.name)
 
     class Meta:
         # we want to make the tuple (project_id, user_id) a composite primary_key
