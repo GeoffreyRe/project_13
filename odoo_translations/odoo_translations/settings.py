@@ -132,6 +132,11 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+# we had the directory "static" in the list of directories where django will looking for static files
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, "static"),
+)
+
 # MEDIA_ROOT is used to store files on disk
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
