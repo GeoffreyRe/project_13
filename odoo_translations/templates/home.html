@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Home{% endblock %}
+{% block css_links %}
+
+<link href="{% static 'css/home.css' %}" rel="stylesheet">
+
+{% endblock %}
+
+{% block content %}
+
+<header class="masthead text-center text-white">
+<div class="masthead-content">
+    <div class="container">
+    <h1 class="masthead-heading mb-0">Projet de gestion</h1>
+    <h2 class="masthead-subheading mb-0">des traductions dans Odoo</h2>
+    <a href="#" class="btn btn-primary btn-xl rounded-pill mt-5">Learn More</a>
+    </div>
+</div>
+
+</header>
+
+
+<section>
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-lg-6 order-lg-2">
+          <div class="p-5">
+            <img class="img-fluid rounded-circle" src="{% static 'images/odoo_logo.png' %}" alt="">
+          </div>
+        </div>
+        <div class="col-lg-6 order-lg-1">
+          <div class="p-5">
+            <h2 class="display-4">Traductions Odoo</h2>
+            <p>La gestion des traductions du progiciel Odoo peut s'avérer compliquée et fatidieuse. Ce projet a donc pour but de simplifier la gestion de ces traductions au travers d'une interface simple et efficace !</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-lg-6">
+          <div class="p-5">
+            <img class="img-fluid rounded-circle" src="{% static 'images/translation.jpg' %}" alt="">
+          </div>
+        </div>
+        <div class="col-lg-6">
+          <div class="p-5">
+            <h2 class="display-4">Interface intuitive</h2>
+            <p>Vous pourrez créer des projets, ajouter des fichiers de traductions, gérer les traductions de vos projet,... et bien plus encore ! Mais la première étape est de se créer un compte.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-lg-6 order-lg-2">
+          <div class="p-5">
+            <img class="img-fluid rounded-circle" src="{% static 'images/opensource.jpg' %}" alt="">
+          </div>
+        </div>
+        <div class="col-lg-6 order-lg-1">
+          <div class="p-5">
+            <h2 class="display-4">Open source</h2>
+            <p>Tu souhaites participer à l'amélioration de ce projet ? Cela tombe bien car il est totalement Open-source et herbegé sur github !</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+{% endblock %}
