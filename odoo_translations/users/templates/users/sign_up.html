@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Sign up{% endblock %}
+{% block css_links %}
+
+<link href="{% static 'users/css/sign_up.css' %}" rel="stylesheet">
+
+{% endblock %}
+
+{% block content %}
+
+<header class="masthead text-white">
+<div class="masthead-content">
+    <h1 class="h3 main-title">Sign up</h1> 
+    {% for message in messages %}
+        <p class="bg-warning">{{message}}</p> 
+    {% endfor %}
+    <div class="container">
+    <form action="{% url 'signup' %}" method="post" class="form-group row">
+    {% csrf_token %}
+    {{ form }}
+    <input type="submit" value="Submit" class="btn btn-primary submit-button" />
+    </form>
+    </div>
+</div>
+
+</header>
+{% endblock %}
