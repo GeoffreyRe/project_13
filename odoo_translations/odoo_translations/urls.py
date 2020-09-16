@@ -20,7 +20,8 @@ from django.conf import settings
 from django.conf.urls import url
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('project/', include("projects.urls"))
+    path('project/', include("projects.urls")),
+    path('', include('pages.urls'))
 ]
 
 if settings.DEBUG:
