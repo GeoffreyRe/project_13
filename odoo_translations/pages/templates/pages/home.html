@@ -8,6 +8,14 @@
 {% endblock %}
 
 {% block content %}
+{% for message in messages%}
+  <div class="d-inline-flex popup-style-div p-2 mb-2">
+    <p class="popup-style-message my-0">{{message}}</p>
+    <div id="cross-button-close" class="d-flex flex-column justify-content-center pl-2">
+      <i class="fas fa-times-circle"></i>
+    </div>
+  </div>
+{% endfor %}
 
 <header class="masthead text-center text-white">
 <div class="masthead-content">
@@ -19,9 +27,6 @@
 </div>
 
 </header>
-{% for message in messages%}
-  <p class="popup-style-message">{{message}}</p>
-{% endfor %}
 
 <section>
     <div class="container">
@@ -77,4 +82,8 @@
     </div>
   </section>
 
+{% endblock %}
+
+{% block javascript_files %}
+<script src="{% static 'pages/js/home.js' %}"></script>
 {% endblock %}

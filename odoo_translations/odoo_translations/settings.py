@@ -143,7 +143,7 @@ STATICFILES_DIRS = (
 # MEDIA_ROOT is used to store files on disk
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
-
+LOGIN_URL = 'login'
 
 # we create a logger system
 LOGGING = {

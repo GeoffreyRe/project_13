@@ -13,6 +13,7 @@
         <!-- Custom fonts for this template -->
         <link href="https://fonts.googleapis.com/css?family=Catamaran:100,200,300,400,500,600,700,800,900" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css?family=Lato:100,100i,300,300i,400,400i,700,700i,900,900i" rel="stylesheet">
+        <script src="https://use.fontawesome.com/releases/v5.13.0/js/all.js" crossorigin="anonymous"></script>
 
         <!-- Custom styles for this template -->
         <link href="{% static 'css-bootstrap-template/one-page-wonder.min.css' %}" rel="stylesheet">
@@ -22,18 +23,31 @@
             <!-- Navigation -->
         <nav class="navbar navbar-expand-lg navbar-dark navbar-custom fixed-top">
             <div class="container">
-            <a class="navbar-brand" href="#">Traductions odoo</a>
+            <a class="navbar-brand" href="{% url 'view_home'%}">Traductions odoo</a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarResponsive">
                 <ul class="navbar-nav ml-auto">
+                {% if user.is_authenticated %}
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Sign Up</a>
+                    <a class="nav-link" href="{% url 'invitations_list'%}" title="Mes invitations de projet"><i class="fas fa-tasks fa-2x"></i></a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Log In</a>
+                    <a class="nav-link" href="{% url 'projects_list'%}" title="Mes projets"><i class="fas fa-project-diagram fa-2x"></i></a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'logout'%}" title="Se déconnecter"><i class="fas fa-sign-out-alt fa-2x"></i></a>
+                </li>
+                {% else %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'signup'%}" title="Se créer un compte"><i class="fas fa-user-plus fa-2x"></i></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'login'%}" title="Se connecter"><i class="fas fa-sign-in-alt fa-2x"></i></a>
+                </li>
+                {%endif%}
+
                 </ul>
             </div>
             </div>
@@ -49,6 +63,8 @@
 
         <script src="{% static 'jquery/jquery.min.js' %}"></script>
         <script src="{% static 'bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+        {% block javascript_files%}
+        {% endblock %}
     </body>
 </html>
     

@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}mes projets{% endblock %}
+{% block css_links %}
+
+<link href="{% static 'projects/css/projects_list.css' %}" rel="stylesheet">
+
+{% endblock %}
+
+{% block content %}
+<header class="masthead">
+{{sentence}}
+<div class="masthead-content container">
+    <h1 class="h3 main-title text-center">Mes projets</h1>
+        <div class="container">
+        {% for sub_projects in projects %}
+            <div class="row justify-content-around">
+                {% if sub_projects|length == 2 %}
+                    {% for project in sub_projects %}
+                        <div class="col-10 col-md-5 border mb-3">{{project}}</div>
+                    {% endfor %}
+                {% else %}
+                    <div class="col-10 col-md-5 border mb-3">{{sub_projects.0}}</div>
+                    <div class="col-10 col-md-5 border mb-3">Créer un nouveau projet</div>
+                {% endif %}
+            </div>
+        {% endfor %}
+        {% if not is_odds %}
+        <div class="row justify-content-around">
+            <div class="col-10 col-md-5 border">Créez un nouveau projet</div>
+        </div>
+        {% endif %}
+        </div>
+    
+</div>
+
+</header>
+{% endblock %}

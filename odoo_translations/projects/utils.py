@@ -1,0 +1,8 @@
+def nest_list(list):
+    index = 0
+    max_index = len(list)
+    nested = []
+    while index < max_index:
+        nested.append(list[index:index + 2])
+        index += 2
+    return nested
