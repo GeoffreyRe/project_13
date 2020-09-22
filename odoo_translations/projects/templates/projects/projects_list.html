@@ -6,6 +6,14 @@
 <link href="{% static 'projects/css/projects_list.css' %}" rel="stylesheet">
 
 {% endblock %}
+{% block popup %}
+    <div class="shadow-popup">
+    <div class="popup-creation-project container text-center d-none">
+        <div class="button-close-popup">x</div>
+        <p>je suis un popup !</p>
+    </div>
+    </div>
+{% endblock %}
 
 {% block content %}
 <header class="masthead">
@@ -17,17 +25,20 @@
             <div class="row justify-content-around">
                 {% if sub_projects|length == 2 %}
                     {% for project in sub_projects %}
-                        <div class="col-10 col-md-5 border mb-3">{{project}}</div>
+                        <div class="col-10 col-md-5 border mb-3 project-div">{{project}}</div>
                     {% endfor %}
                 {% else %}
-                    <div class="col-10 col-md-5 border mb-3">{{sub_projects.0}}</div>
-                    <div class="col-10 col-md-5 border mb-3">Créer un nouveau projet</div>
+                    <div class="col-10 col-md-5 border mb-3 project-div">{{sub_projects.0}}</div>
+                    <div class="col-10 col-md-5 border mb-3 project-div">Créer un nouveau projet</div>
                 {% endif %}
             </div>
         {% endfor %}
         {% if not is_odds %}
-        <div class="row justify-content-around">
-            <div class="col-10 col-md-5 border">Créez un nouveau projet</div>
+        <div class="row justify-content-around text-center">
+            <div class="col-10 col-md-5 border project-div">
+            <p>Créez un nouveau projet</p>
+            <button class="button-create-project d-inline-block mb-2 rounded bg-info">+</button>
+            </div>
         </div>
         {% endif %}
         </div>
@@ -35,4 +46,7 @@
 </div>
 
 </header>
+{% endblock %}
+{% block javascript_files%}
+    <script src="{% static 'projects/js/project.js' %}"></script>
 {% endblock %}

@@ -17,9 +17,13 @@
 
         <!-- Custom styles for this template -->
         <link href="{% static 'css-bootstrap-template/one-page-wonder.min.css' %}" rel="stylesheet">
+        <link href="{% static 'css/base.css' %}" rel="stylesheet">
         {% block css_links %}{% endblock %}
     </head>
     <body>
+        {% block popup %}
+        {% endblock %}
+        <div class="body-content">
             <!-- Navigation -->
         <nav class="navbar navbar-expand-lg navbar-dark navbar-custom fixed-top">
             <div class="container">
@@ -65,6 +69,7 @@
         <script src="{% static 'bootstrap/js/bootstrap.bundle.min.js' %}"></script>
         {% block javascript_files%}
         {% endblock %}
+    </div>
     </body>
 </html>
     

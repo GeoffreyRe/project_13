@@ -8,9 +8,9 @@ from .utils import nest_list
 @login_required
 def projects_list_view(request):
     projects = request.user.userproject_set.all()
-    projects = [1,2,3,4,5,6]
+    projects = []
     projects_nested = nest_list(projects)
-    context = {"projects" : [[1,2],[3,4],[5,6]], "is_odds" : False if len(projects) % 2 == 0 else True}
+    context = {"projects" : [], "is_odds" : False if len(projects) % 2 == 0 else True}
     return render(request, "projects/projects_list.html", context)
 
 @login_required

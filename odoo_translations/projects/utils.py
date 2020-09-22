@@ -1,4 +1,5 @@
 def nest_list(list):
+    # refactoriser cette fonction avec une compréhension de liste
     index = 0
     max_index = len(list)
     nested = []
