@@ -10,7 +10,16 @@
     <div class="shadow-popup">
     <div class="popup-creation-project container text-center d-none">
         <div class="button-close-popup">x</div>
-        <p>je suis un popup !</p>
+        {% for message in messages %}
+        <p class="text-danger text-center">{{message}}</p> 
+        {% endfor %}
+        <div class="container pt-2">
+        <form action="{% url 'create_project' %}" method="post" class="form-group row">
+        {% csrf_token %}
+        {{ form }}
+        <input type="submit" value="Créer" class="btn btn-primary submit-button" />
+        </form>
+        </div>
     </div>
     </div>
 {% endblock %}

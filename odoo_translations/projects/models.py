@@ -36,7 +36,7 @@ class Project(models.Model):
     """
     This model is projects created by user when he wants to handle some translations
     """
-    name = models.CharField(max_length=40, null=False, blank=False)
+    name = models.CharField(max_length=40, null=False, blank=False, verbose_name="Nom du projet")
     description = models.TextField(blank=True)
     # creator is a many-to-one field thats links to the user who creates the project
     creator = models.ForeignKey(
@@ -45,7 +45,7 @@ class Project(models.Model):
         null=True,
         related_name="projects_created"
     )
-    creation_date = models.DateTimeField(default=timezone.now, null=False)
+    creation_date = models.DateTimeField(default=timezone.now, null=False, verbose_name="Date de création")
     template_file = models.OneToOneField('translations.TranslationFile',
                                         on_delete=models.SET_NULL,
                                         related_name="project_where_template",

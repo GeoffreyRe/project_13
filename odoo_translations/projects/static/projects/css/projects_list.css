@@ -23,6 +23,7 @@
 .popup-creation-project
 {
     z-index:1041;
+    overflow-y:scroll;
     position:relative;
     background-color:white;
     display:block;
@@ -36,6 +37,7 @@
     cursor:pointer;
     display:flex;
     width:25px;
+    line-height: 25px;
     height:25px;
     border-radius:50%;
     top:0;
