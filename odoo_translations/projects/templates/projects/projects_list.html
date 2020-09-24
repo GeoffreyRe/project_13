@@ -31,14 +31,17 @@
     <h1 class="h3 main-title text-center">Mes projets</h1>
         <div class="container">
         {% for sub_projects in projects %}
-            <div class="row justify-content-around">
+            <div class="row justify-content-around text-center">
                 {% if sub_projects|length == 2 %}
                     {% for project in sub_projects %}
-                        <div class="col-10 col-md-5 border mb-3 project-div">{{project}}</div>
+                        <div class="col-10 col-md-5 border mb-3 project-div">{{project.name}}</div>
                     {% endfor %}
                 {% else %}
-                    <div class="col-10 col-md-5 border mb-3 project-div">{{sub_projects.0}}</div>
-                    <div class="col-10 col-md-5 border mb-3 project-div">Créer un nouveau projet</div>
+                    <div class="col-10 col-md-5 border mb-3 project-div">{{sub_projects.0.name}}</div>
+                    <div class="col-10 col-md-5 border mb-3 project-div">
+                    <p>Créez un nouveau projet</p>
+                    <button class="button-create-project d-inline-block mb-2 rounded bg-info">+</button>
+                    </div>
                 {% endif %}
             </div>
         {% endfor %}

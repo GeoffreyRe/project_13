@@ -2,6 +2,7 @@ from django.db import models
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 from users.models import User
+from .managers import CustomProjectManager
 
 # Create your models here.
 class NameValues(models.TextChoices):
@@ -51,9 +52,11 @@ class Project(models.Model):
                                         related_name="project_where_template",
                                         null=True,
                                         blank=True)
+    objects = CustomProjectManager()
     
     def __str__(self):
         return self.name
+
 
 class Invitation(models.Model):
 
