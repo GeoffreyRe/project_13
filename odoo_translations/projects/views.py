@@ -25,11 +25,18 @@ def invitations_list_view(request):
 def create_project(request):
     if request.method == 'POST':
         #import pdb; pdb.set_trace()
+        """
         new_project = Project(name=request.POST['name'],
                             description=request.POST['description'],
                             creation_date=request.POST['initial-creation_date'],
                             creator=request.user)
         new_project.save()
+        """
+        vals = {'name' : request.POST['name'],
+        'description' : request.POST['description'],
+        'creation_date' : request.POST['initial-creation_date'],
+        'creator' : request.user}
+        Project.objects.create_new_project(vals)
     return redirect("projects_list")
 
 
