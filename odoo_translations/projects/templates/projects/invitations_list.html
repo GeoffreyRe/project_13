@@ -1,19 +1,36 @@
 {% extends "base.html" %}
 {% load static %}
-{% block title %}mes invitations de projet{% endblock %}
+{% block title %}mes projets{% endblock %}
 {% block css_links %}
 
-<link href="{% static 'projects/css/invitations_list.css' %}" rel="stylesheet">
+<link href="{% static 'projects/css/projects_list.css' %}" rel="stylesheet">
 
 {% endblock %}
 
 {% block content %}
-
-<header class="masthead text-white">
-<div class="masthead-content">
-    <h1 class="h3 main-title">Mes invitations</h1> 
+<header class="masthead">
+{{sentence}}
+<div class="masthead-content container">
+    <h1 class="h3 main-title text-center">Mes invitations de projet</h1>
+        <div class="container text-center">
+            {% for invitation in invitations %}
+            <div class="row border rounded project-div d-flex justify-content-between align-items-center">
+                <div class="invitation-description p-2">
+                    <p> invitation sur le projet <span class="font-weight-bold">{{invitation.project.name}}</span> par <span class="font-weight-bold">{{invitation.inviting_user.username}}</span></p>
+                    <p>Role sur le projet : <span class="font-weight-bold">{{invitation.user_role.get_name_display}}</span></p>
+                </div>
+                <span class="icons-invitation p-2" style="height:min-height;">
+                    <i id="accepted_{{invitation.id}}" class="fas fa-check-circle fa-2x rounded-circle btn-accepted text-success"></i>
+                    <i id="refused_{{invitation.id}}" class="fas fa-times-circle fa-2x rounded-circle btn-refused text-danger"></i>
+                </span>
+            </div>
+            {% endfor %}
+        </div>
     
 </div>
 
 </header>
+{% endblock %}
+{% block javascript_files%}
+    <script src="{% static 'projects/js/project.js' %}"></script>
 {% endblock %}

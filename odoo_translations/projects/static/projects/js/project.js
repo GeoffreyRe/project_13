@@ -90,4 +90,30 @@ $(document).ready(function(){
             }
         )
     })
+
+    $('.btn-accepted').click(function(){
+        // we will try to convert an invitation to a projet if the user click on the button
+            console.log("Nous allons accepter l'invitation", this.id.split("_")[1]);
+            let button_elt = this
+            $.ajax({
+                url : 'invitation/to-project',
+                type :"post",
+                data : {
+                    'invitation_id' : this.id.split("_")[1]
+                },
+                success : function(response){
+                    console.log(response);
+                    if (response.success == true)
+                    {
+                        console.log('test')
+                        console.log()
+                        $(button_elt).parent().parent().css('background-color', 'rgba(0,124,45,0.3)')
+                    }
+                },
+                error : function(response){
+                    console.log("error requête ajax")
+                },
+            })
+
+    })
 })

@@ -1,6 +1,7 @@
-from django.db import models
+from django.db import models, IntegrityError
 from django.core.exceptions import ValidationError
 from django.utils import timezone
+from django.apps import apps
 from users.models import User
 from .managers import CustomProjectManager
 
@@ -86,6 +87,28 @@ class Invitation(models.Model):
         null=True,
         related_name="project_invitations_send"
     )
+
+    def is_accepted(self):
+        self.accepted = True
+    
+    def is_refused(self):
+        self.accepted = False
+    
+    def from_invitation_to_project(self):
+        self.is_accepted()
+        UserProject = apps.get_model('projects', 'UserProject')
+        new_user_project = UserProject(project=self.project,
+            user=self.user,
+            user_role=self.user_role,
+            invitation= self
+        )
+        try:
+            new_user_project.save()
+        except IntegrityError:
+            return False
+        self.save()
+        return True
+
 
     def __str__(self):
         return "Invitation projet {} : {} invite {} en tant que {}".format(self.project.name,

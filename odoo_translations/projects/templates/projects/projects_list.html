@@ -31,10 +31,14 @@
     <h1 class="h3 main-title text-center">Mes projets</h1>
         <div class="container">
         {% for sub_projects in projects %}
-            <div class="row justify-content-around text-center">
+            <div class="row justify-content-around text-center p-1">
                 {% if sub_projects|length == 2 %}
                     {% for project in sub_projects %}
-                        <div class="col-10 col-md-5 border mb-3 project-div">{{project.name}}</div>
+                        <div class="col-10 col-md-5 border mb-3 project-div">
+                            <p>Project : <span class="font-weight-bold">{{project.project.name}}</span></p>
+                            <p> Role : <span class="font-weight-bold">{{project.user_role.get_name_display}}</span></p>
+                            <button class="my-2 rounded bg-info">Voir le projet</button>
+                        </div>
                     {% endfor %}
                 {% else %}
                     <div class="col-10 col-md-5 border mb-3 project-div">{{sub_projects.0.name}}</div>
@@ -46,7 +50,7 @@
             </div>
         {% endfor %}
         {% if not is_odds %}
-        <div class="row justify-content-around text-center">
+        <div class="row justify-content-around text-center p-1">
             <div class="col-10 col-md-5 border project-div">
             <p>Créez un nouveau projet</p>
             <button class="button-create-project d-inline-block mb-2 rounded bg-info">+</button>

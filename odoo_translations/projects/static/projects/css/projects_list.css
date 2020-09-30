@@ -2,6 +2,7 @@
 {
     background-color:rgb(255,255,255) !important;
     color:black !important;
+    padding-top:calc(4rem + 72px) !important;
 }
 
 .project-div
@@ -47,4 +48,15 @@
     background-color:rgb(185, 0, 0);
     justify-content: center;
     color:white;
+}
+
+.btn-accepted, .btn-refused
+{
+    cursor:pointer;
+    transition:transform 0.3s;
+}
+
+.btn-accepted:hover, .btn-refused:hover
+{
+    transform:scale(1.1);
 }
