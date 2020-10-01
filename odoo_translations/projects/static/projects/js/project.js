@@ -56,7 +56,9 @@ $(document).ready(function(){
     //we create a click event to close popup form
     $('.button-close-popup').click(function(){
         $('.popup-creation-project').addClass('d-none');
-        $('.body-content').css('filter', 'blur(0px)')
+        $('.body-content').css('filter', 'blur(0px)');
+        $('#id_name').val('') // we set value to empty string when closing popup
+        $('#id_description').val('') //idem for description
         $('.shadow-popup').hide();
     })
 

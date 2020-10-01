@@ -15,7 +15,7 @@
         <div class="container text-center">
             {% for invitation in invitations %}
             {% if invitation.accepted == None %}
-            <div class="row border rounded project-div d-flex justify-content-between align-items-center">
+            <div class="row border rounded project-div d-flex justify-content-between align-items-center my-3">
                 <div class="invitation-description p-2">
                     <p> invitation sur le projet <span class="font-weight-bold">{{invitation.project.name}}</span> par <span class="font-weight-bold">{{invitation.inviting_user.username}}</span></p>
                     <p>Role sur le projet : <span class="font-weight-bold">{{invitation.user_role.get_name_display}}</span></p>
@@ -26,14 +26,14 @@
                 </span>
             </div>
             {% elif invitation.accepted == True %}
-            <div class="row border rounded project-div d-flex justify-content-center align-items-center" style="background-color:rgba(0,124,45,0.3);">
+            <div class="row border rounded project-div d-flex justify-content-center align-items-center my-3" style="background-color:rgba(0,124,45,0.3);">
                 <div class="invitation-description p-2">
                     <p> invitation sur le projet <span class="font-weight-bold">{{invitation.project.name}}</span> par <span class="font-weight-bold">{{invitation.inviting_user.username}}</span></p>
                     <p>Role sur le projet : <span class="font-weight-bold">{{invitation.user_role.get_name_display}}</span></p>
                 </div>
             </div>
             {% elif invitation.accepted == False %}
-            <div class="row border rounded project-div d-flex justify-content-center align-items-center" style="background-color:rgba(202,88,88,0.3);">
+            <div class="row border rounded project-div d-flex justify-content-center align-items-center my-3" style="background-color:rgba(202,88,88,0.3);">
                 <div class="invitation-description p-2">
                     <p> invitation sur le projet <span class="font-weight-bold">{{invitation.project.name}}</span> par <span class="font-weight-bold">{{invitation.inviting_user.username}}</span></p>
                     <p>Role sur le projet : <span class="font-weight-bold">{{invitation.user_role.get_name_display}}</span></p>
