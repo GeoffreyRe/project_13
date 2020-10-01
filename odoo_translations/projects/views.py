@@ -56,6 +56,7 @@ def view_verification_project_name(request):
 @login_required
 def from_invitation_to_project(request):
     if request.method == "POST":
+        """
         result = True
         invitation_id = request.POST.get('invitation_id', None)
         try:
@@ -68,3 +69,26 @@ def from_invitation_to_project(request):
         if invitation is not None:
             result = invitation.from_invitation_to_project()
         return JsonResponse({'success' : result}, safe=False, status=200)
+        """
+        return JsonResponse({'success' : True}, safe=False, status=200)
+    
+@login_required
+def invitation_refused(request):
+    if request.method == "POST":
+        """
+        invitation_id = request.POST.get('invitation_id', None)
+        success = False
+        if invitation_id is not None:
+            try:
+                invitation_id = int(invitation_id)
+            except ValueError:
+                return JsonResponse({'success' : success}, safe=False, status=200)
+            invitation = Invitation.objects.get(id=invitation_id)
+            if invitation is not None:
+                invitation.is_refused()
+                success=True
+            return JsonResponse({'success' : success}, safe=False, status=200)
+        return JsonResponse({'success' : success}, safe=False, status=200)
+    return JsonResponse({'success' : success}, safe=False, status=200)
+    """
+        return JsonResponse({'success' : True}, safe=False, status=200)

@@ -41,7 +41,11 @@
                         </div>
                     {% endfor %}
                 {% else %}
-                    <div class="col-10 col-md-5 border mb-3 project-div">{{sub_projects.0.name}}</div>
+                    <div class="col-10 col-md-5 border mb-3 project-div">
+                        <p>Project : <span class="font-weight-bold">{{sub_projects.0.project.name}}</span></p>
+                        <p> Role : <span class="font-weight-bold">{{sub_projects.0.user_role.get_name_display}}</span></p>
+                        <button class="my-2 rounded bg-info">Voir le projet</button>
+                    </div>
                     <div class="col-10 col-md-5 border mb-3 project-div">
                     <p>Créez un nouveau projet</p>
                     <button class="button-create-project d-inline-block mb-2 rounded bg-info">+</button>

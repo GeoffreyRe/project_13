@@ -91,10 +91,16 @@ $(document).ready(function(){
         )
     })
 
+    // we add an event listener on button to accept invitations
     $('.btn-accepted').click(function(){
         // we will try to convert an invitation to a projet if the user click on the button
             console.log("Nous allons accepter l'invitation", this.id.split("_")[1]);
             let button_elt = this
+            // we send an ajax request with data = id of invitation to validate
+            // if response.success = true, it means that the invitation has been converted
+            // and user can now see project in project list
+            // if response.success = false, it means that there was a problem during validation
+            // (integrity Error, the id was not a number etc...) and then we inform user
             $.ajax({
                 url : 'invitation/to-project',
                 type :"post",
@@ -105,9 +111,29 @@ $(document).ready(function(){
                     console.log(response);
                     if (response.success == true)
                     {
-                        console.log('test')
-                        console.log()
-                        $(button_elt).parent().parent().css('background-color', 'rgba(0,124,45,0.3)')
+                        let errorMessageElt = $('#error-message-invitation-' + button_elt.id.split("_")[1])
+                        if (errorMessageElt.length !== 0){
+                            errorMessageElt.hide();
+                        }
+                        $(button_elt).parent().hide();
+                        $(button_elt).parent().parent().css('background-color', 'rgba(0,124,45,0.3)');
+                        $(button_elt).parent().parent().removeClass('justify-content-between');
+                        $(button_elt).parent().parent().addClass('justify-content-center');
+                    }
+                    else if (response.success == false)
+                    {
+                        if ($('#error-message-invitation-' + button_elt.id.split("_")[1]).length === 0)
+                        {
+                        let pErrorElt = document.createElement('p');
+                        pErrorElt.id = "error-message-invitation-" + button_elt.id.split("_")[1]
+                        pErrorElt.innerText = "un problème est survenu lors de la validation de l'invitation";
+                        $(pErrorElt).css('color', 'red');
+                        $(button_elt).parent().parent().before(pErrorElt);
+                        }
+                        else
+                        {
+                            $('#error-message-invitation-' + button_elt.id.split("_")[1]).text("un problème est survenu lors de la validation de l'invitation");
+                        }
                     }
                 },
                 error : function(response){
@@ -116,4 +142,55 @@ $(document).ready(function(){
             })
 
     })
+
+
+    // we will add event listener to btn-refused buttons
+    $('.btn-refused').click(function(){
+        let button_elt = this
+        // we will send an ajax request with values of if of invitation
+        // if request.success == true, it means that the invitation has been correctly refused,
+        // we change the layout of the page
+        // else, we inform user that there was a problem during the process
+        $.ajax({
+            url : 'invitation/refused',
+            type :"post",
+            data : {
+                'invitation_id' : this.id.split("_")[1]
+            },
+            success : function(response){
+                console.log(response);
+                if (response.success == true)
+                {
+                    let errorMessageElt = $('#error-message-invitation-' + button_elt.id.split("_")[1])
+                    if (errorMessageElt.length !== 0){
+                        errorMessageElt.hide();
+                    }
+                    $(button_elt).parent().hide();
+                    $(button_elt).parent().parent().css('background-color', 'rgba(202,88,88,0.3)');
+                    $(button_elt).parent().parent().removeClass('justify-content-between');
+                    $(button_elt).parent().parent().addClass('justify-content-center');
+                }
+                else if (response.success == false)
+                {
+                    if ($('#error-message-invitation-' + button_elt.id.split("_")[1]).length === 0)
+                    {
+                    let pErrorElt = document.createElement('p');
+                    pErrorElt.id = "error-message-invitation-" + button_elt.id.split("_")[1];
+                    pErrorElt.innerText = "un problème est survenu lors du refus de l'invitation";
+                    $(pErrorElt).css('color', 'red');
+                    $(button_elt).parent().parent().before(pErrorElt);
+                    }
+                    else
+                    {
+                        $('#error-message-invitation-' + button_elt.id.split("_")[1]).text("un problème est survenu lors du refus de l'invitation");
+                    }
+                }
+            },
+            error : function(response){
+                console.log("error requête ajax")
+            },
+        })
+    })
+
+
 })
