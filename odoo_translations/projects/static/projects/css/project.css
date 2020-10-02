@@ -36,16 +36,30 @@
 
 ul ul
 {
-    padding-left:10px !important;
+    padding-left:40px !important;
+    transition:opacity 0.5s;
+    opacity:0;
 }
 
 .vertical-menu li
 {
     padding:3px;
     padding-top:0;
+    cursor:pointer;
 }
 
 .vertical-menu li:hover
 {
     color:rgb(190, 197, 204);
+}
+
+.arrow-dropdown
+{
+    transform:rotate(0);
+    transition:transform 0.5s;
+}
+
+.rotation-45-degrees
+{
+    transform:rotate(0.25turn);
 }

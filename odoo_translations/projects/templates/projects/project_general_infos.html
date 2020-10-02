@@ -14,8 +14,8 @@
     <nav>
         <ul>
             <li>Informations générales</li>
-            <li>Traductions projet</li>
-            <ul class="sub-list-vertical-menu">
+            <li class="li-to-extend"><i class="fas fa-arrow-right d-inline mr-2 arrow-dropdown"></i>Traductions projet</li>
+            <ul class="sub-list-vertical-menu" style="visibility:hidden;">
                 <li>Voir toutes les traductions</li>
                 <li>Traductions par modèle Odoo</li>
                 <li>Traductions par vue Odoo</li>
@@ -28,10 +28,21 @@
 </div>
 <div class="page-content text-center">
     <h1 class="h4 pt-2">Informations générales</h1>
+    <h2 class="h4 text-left pl-2 pt-2">Détails</h2>
+        <div class="block-details-project">
+        </div>
+    <h2 class="h4 text-left pl-2 pt-2">Utilisateurs</h2>
+        <div class="block-users-project">
+
+        </div>
+    <h2 class="h4 text-left pl-2 pt-2">Fichiers de traductions</h2>
+        <div class="block-files-project">
+
+        </div>
 </div>
 </div>
 {% endblock %}
 
 {% block javascript_files%}
-    <script src="{% static 'projects/js/project.js' %}"></script>
+    <script src="{% static 'projects/js/project_detail.js' %}"></script>
 {% endblock %}

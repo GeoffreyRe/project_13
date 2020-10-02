@@ -5,6 +5,7 @@ import json
 from .utils import nest_list
 from .forms import ProjectCreationForm
 from .models import Project, Invitation, UserProject
+from .decorators import user_is_assigned_to_project
 
 # Create your views here.
 
@@ -94,5 +95,6 @@ def invitation_refused(request):
         return JsonResponse({'success' : True}, safe=False, status=200)
 
 @login_required
-def detail_project(request):
+@user_is_assigned_to_project
+def detail_project(request, project_id):
     return render(request, 'projects/project_general_infos.html')
