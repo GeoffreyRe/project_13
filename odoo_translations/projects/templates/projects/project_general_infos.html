@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Projet{% endblock %}
+{% block css_links %}
+
+<link href="{% static 'projects/css/project.css' %}" rel="stylesheet">
+
+{% endblock %}
+
+{% block content %}
+<div class="masthead">
+<div class="vertical-menu d-flex flex-column py-5 pr-3">
+    <h4>Nom du projet</h4>
+    <nav>
+        <ul>
+            <li>Informations générales</li>
+            <li>Traductions projet</li>
+            <ul class="sub-list-vertical-menu">
+                <li>Voir toutes les traductions</li>
+                <li>Traductions par modèle Odoo</li>
+                <li>Traductions par vue Odoo</li>
+                <li>Traductions par menu Odoo</li>
+                <li>Traductions par code Odoo</li>
+                <li>Autres traductions</li>
+            </ul>
+        </ul>
+    </nav>
+</div>
+<div class="page-content text-center">
+    <h1 class="h4 pt-2">Informations générales</h1>
+</div>
+</div>
+{% endblock %}
+
+{% block javascript_files%}
+    <script src="{% static 'projects/js/project.js' %}"></script>
+{% endblock %}

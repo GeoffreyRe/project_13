@@ -92,3 +92,7 @@ def invitation_refused(request):
     return JsonResponse({'success' : success}, safe=False, status=200)
     """
         return JsonResponse({'success' : True}, safe=False, status=200)
+
+@login_required
+def detail_project(request):
+    return render(request, 'projects/project_general_infos.html')
