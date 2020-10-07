@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
+from django.forms import modelformset_factory
 import json
 from .utils import nest_list
 from .forms import ProjectCreationForm
@@ -104,7 +105,52 @@ def detail_project(request, project_id):
         #TODO : à retravailler pour rediriger vers une page avec un message explicite
         return HttpResponse("Le projet demandé n'existe pas")
     users_on_project = UserProject.objects.filter(project=project)
-    context = {'users_on_project' : users_on_project,
-    'project': project}
+    has_write_rights = request.user.has_rights_to_modify_project(project)
+    context = {
+        'users_on_project' : users_on_project,
+        'project': project,
+        'has_write_rights': has_write_rights,
+        'modifications': False}
 
     return render(request, 'projects/project_general_infos.html', context)
+
+
+@login_required
+@user_is_assigned_to_project # custom decorator : see decorators.py module
+def detail_project_modifications(request, project_id):
+    try:
+        project = Project.objects.get(id=project_id)
+    except ObjectDoesNotExist:
+        #TODO : à retravailler pour rediriger vers une page avec un message explicite
+        return HttpResponse("Le projet demandé n'existe pas")
+    if not request.user.has_rights_to_modify_project(project):
+        # if user has not the rights to modify project, we redirect it
+        # TODO: we could add a message to display to inform user that he coudn't do that
+        return redirect('project_detail')
+
+    project_form = ProjectCreationForm({'name':project.name, 'description':project.description})
+    UserProjectFormset = modelformset_factory(UserProject, fields = ('user', 'user_role'), extra=0)
+    user_project_formset = UserProjectFormset(queryset=UserProject.objects.filter(project=project))
+    #TODO: modifier ce bout de code car ce n'est pas le meilleur endroit pour le faire
+    for form in user_project_formset:
+        for field_name, field in form.fields.items():
+            if field_name == "user":
+                field.widget.attrs['disabled'] = True
+    #import pdb;pdb.set_trace()
+    context = {
+        'users_on_project' : user_project_formset,
+        'project': project,
+        'project_f' : project_form,
+        'modifications':True}
+
+    return render(request, 'projects/project_general_infos.html', context)
+
+
+@login_required
+@user_is_assigned_to_project # custom decorator : see decorators.py module
+def modify_project(request, project_id):
+    import pdb; pdb.set_trace()
+    if request.method == "POST":
+        datas = request.POST['datas_to_modify']
+        for project_tuple in datas['project']:
+            pass

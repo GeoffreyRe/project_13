@@ -63,3 +63,23 @@ ul ul
 {
     transform:rotate(0.25turn);
 }
+
+.disabled-link-style
+{
+    color:white;
+    
+}
+
+.disabled-link-style:hover
+{
+    text-decoration: none;
+    color:white;
+}
+
+.element-no-wrap
+{
+    white-space: nowrap;
+    margin-right:5px;
+}
+
+

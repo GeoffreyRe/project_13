@@ -10,7 +10,7 @@
 {% block content %}
 <div class="masthead">
 <div class="vertical-menu d-flex flex-column py-5 pr-3">
-    <h4>Nom du projet</h4>
+    <h4>{{project.name}}</h4>
     <nav>
         <ul>
             <li>Informations générales</li>
@@ -26,17 +26,23 @@
         </ul>
     </nav>
 </div>
-<div class="page-content text-center">
-    <h1 class="h4 pt-2">Informations générales</h1>
+<div class="page-content">
+    {% if not modifications %}
+    <h1 class="h4 pt-2 col-11 text-center">Informations générales</h1>
+    {% if has_write_rights %}
+    <div class="text-left px-4 pb-2">
+        <button class="btn btn-info rounded"><a href="{% url 'detail_project_modifications' project_id=project.id %}" class="disabled-link-style">Modifier</a></button>
+    </div>
+    {% endif %}
     <h2 class="h4 text-left px-4 pt-2">Détails</h2>
         <div class="block-details-project">
             <div class="d-flex justify-content-around">
-            <p>Nom du projet : {{project.name}}</p>
-            <p>Description du projet : {{project.description}}</p>
-            </div>
-            <div class="d-flex justify-content-around">
+            <p id='project_{{project.id}}_name'>Nom du projet : {{project.name}}</p>
             <p>Date de création : {{project.creation_date}}</p>
-            <p>créateur du projet : {{project.creator}}</p>
+            </div>
+            <div class="d-flex flex-column justify-content-start">
+            <p>Description du projet : </p>
+            <p id='project_{{project.id}}_description'>{{project.description}}</p>
             </div>
         </div>
     <h2 class="h4 text-left px-4 pt-2">Utilisateurs</h2>
@@ -49,12 +55,49 @@
         </div>
     <h2 class="h4 text-left px-4 pt-2">Fichiers de traductions</h2>
         <div class="block-files-project">
-
+            {% if not files %}
+            <p>Il n'y a aucun fichier de traduction</p>
+            {% endif %}
         </div>
+    {% else %}
+    <!--In the case of user clicks on the modify button-->
+    <h1 class="h4 pt-2 col-11 text-center">Informations générales</h1>
+    <div class="text-left px-4 pb-2">
+        <button id = "btn-save" class="btn btn-info rounded"><a href="#" class="disabled-link-style">Sauvegarder</a></button>
+        <button class="btn btn-info rounded"><a href="{% url 'detail_project' project_id=project.id %}" class="disabled-link-style">Annuler</a></button>
+    </div>
+    <h2 class="h4 text-left px-4 pt-2">Détails</h2>
+        <div id="detail_project_{{project.id}}"class="block-details-project">
+            <div class="d-flex justify-content-around">
+            {{ project_f.management_form }}
+            <p id='project_{{project.id}}_name' class="d-flex justify-content-start"><span class="element-no-wrap">Nom du projet :</span>{{project_f.name}}</p>
+            <p>Date de création : {{project.creation_date}}</p>
+            </div>
+            <div class="d-flex flex-column justify-content-start">
+            <p>Description du projet : </p>
+            <p id='project_{{project.id}}_description'>{{project_f.description}}</p>
+            </div>
+        </div>
+    <h2 class="h4 text-left px-4 pt-2">Utilisateurs</h2>
+        <div class="block-users-project">
+            <p>créateur du projet : {{project.creator}}</p>
+            {{ formset.management_form }}
+            {%for user_project_form in users_on_project %}
+                <div class="user_infos d-flex justify-content-between pl-5">
+                    <p id='project_user_id_{{user_project_form.id.value}}'>{{user_project_form.user}} : {{user_project_form.user_role}}</p>
+                    
+                </div>
+            {% endfor %}
+        </div>
+    <h2 class="h4 text-left px-4 pt-2">Fichiers de traductions</h2>
+        <div class="block-files-project">
+        </div>
+    {% endif %}
 </div>
 </div>
 {% endblock %}
 
 {% block javascript_files%}
+    <script src="{% static 'projects/js/project.js' %}"></script>
     <script src="{% static 'projects/js/project_detail.js' %}"></script>
 {% endblock %}

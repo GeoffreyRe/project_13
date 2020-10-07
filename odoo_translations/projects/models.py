@@ -22,7 +22,9 @@ class Role(models.Model):
     name = models.CharField("Nom du rôle",
                             max_length=3,
                             choices=NameValues.choices,
-                            unique=True)
+                            unique=True,
+                            blank=False,
+                            null=False)
 
     class Meta:
         constraints = [
@@ -75,7 +77,8 @@ class Invitation(models.Model):
     user_role = models.ForeignKey(
         Role,
         on_delete=models.PROTECT,
-        null=False
+        null=False,
+        blank=False
     )
     accepted= models.BooleanField(
         null=True,
