@@ -36,14 +36,14 @@
                         <div class="col-10 col-md-5 border mb-3 project-div">
                             <p>Project : <span class="font-weight-bold">{{project.project.name}}</span></p>
                             <p> Role : <span class="font-weight-bold">{{project.user_role.get_name_display}}</span></p>
-                            <button class="my-2 rounded bg-info">Voir le projet</button>
+                            <button class="my-2 rounded bg-info"><a class="link-disabled" href="{% url 'detail_project' project.project.id %}">Voir le projet</a></button>
                         </div>
                     {% endfor %}
                 {% else %}
                     <div class="col-10 col-md-5 border mb-3 project-div">
                         <p>Project : <span class="font-weight-bold">{{sub_projects.0.project.name}}</span></p>
                         <p> Role : <span class="font-weight-bold">{{sub_projects.0.user_role.get_name_display}}</span></p>
-                        <button class="my-2 rounded bg-info">Voir le projet</button>
+                        <button class="my-2 rounded bg-info"><a class="link-disabled" href="{% url 'detail_project' sub_projects.0.project.id %}">Voir le projet</a></button>
                     </div>
                     <div class="col-10 col-md-5 border mb-3 project-div d-flex flex-column justify-content-center align-items-center">
                     <p>Créez un nouveau projet</p>

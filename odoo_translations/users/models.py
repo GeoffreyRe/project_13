@@ -29,4 +29,9 @@ class User(AbstractUser):
                 # if user has a role which allows him to write on project, return True
                 return True
         return False
+    
+    def is_on_project(project_id):
+        project = self.userproject_set.filter(project=project_id)
+        is_on_project = True if len(project) > 0 else False
+        return is_on_project
 

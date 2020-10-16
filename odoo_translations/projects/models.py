@@ -1,4 +1,4 @@
-from django.db import models, IntegrityError
+from django.db import models, IntegrityError, transaction
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 from django.apps import apps
@@ -59,6 +59,48 @@ class Project(models.Model):
     
     def __str__(self):
         return self.name
+    
+    def modify_name(self, new_name):
+        self.name = new_name
+        self.save()
+    
+    def modify_description(self, new_description):
+        self.description = new_description
+        self.save()
+
+    def send_invitation_to_project(self, email, role, inviting_user):
+        InvitationModel = apps.get_model('projects', 'Invitation')
+        UserModel = apps.get_model('users', 'User')
+        RoleModel = apps.get_model('projects', 'Role')
+        role_to_attribute = RoleModel.objects.get(name=role)
+        new_user = UserModel.objects.get(email=email)
+        new_invitation = InvitationModel(
+            project=self,
+            user=new_user,
+            inviting_user=inviting_user,
+            user_role=role_to_attribute
+        )
+        new_invitation.save()
+    
+    def modify_roles_of_user_on_project(self, values, user):
+        for user_dict in values:
+            if user_dict['id'] == "new":
+                self.send_invitation_to_project(user_dict['email'], user_dict['role'], inviting_user=user)
+            else:
+                user_project = self.userproject_set.get(id=user_dict['id'])
+                user_project.modify_user_role(user_dict['role'])
+    
+    def update_project(self, values, user):
+        with transaction.atomic():
+            self.modify_name(values['project']['name'])
+            self.modify_description(values['project']['description'])
+            self.modify_roles_of_user_on_project(values['users'], user)
+            self.delete_users_on_project(values['users_to_delete'])
+    
+    def delete_users_on_project(self, user_ids):
+        self.userproject_set.filter(pk__in=user_ids).delete()
+            
+
 
 
 class Invitation(models.Model):
@@ -146,6 +188,11 @@ class UserProject(models.Model):
         null=True,
         related_name="project_linked"
     )
+
+    def modify_user_role(self, new_role_id):
+        new_role = Role.objects.get(id=new_role_id)
+        self.user_role = new_role
+        self.save()
 
     def __str__(self):
         return "l'utilisateur {} a le rôle {} sur le projet \"{}\"".format(self.user.username, 

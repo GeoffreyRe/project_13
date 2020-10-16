@@ -20,68 +20,151 @@ $(document).ready(function(){
         }
     })
 
+    let usersToDelete = []
+    $('.fa-minus-circle').click(function(){
+        let userId = this.dataset.userDeleted
+        if (userId == 'new')
+        {
+            let newUserId = this.dataset.newUserId
+            console.log(newUserId)
+            let DivToRemove = $(".user_infos[data-user-id='new_" + newUserId + "']")
+            console.log(DivToRemove)
+            DivToRemove.removeClass('d-flex')
+            DivToRemove.removeClass('user_infos')
+            DivToRemove.remove()
+
+        }
+        else{
+            usersToDelete.push(userId)
+            let DivToRemove = $(".user_infos[data-user-id='" + userId + "']")
+            DivToRemove.removeClass('d-flex')
+            DivToRemove.removeClass('user_infos')
+            DivToRemove.remove()
+            console.log(usersToDelete)
+        }
+        
+    })
+
+
+
+    let numberNewUser = 0
+    $('.btn-append').click(function(){
+        // ajouter du code permettant d'ajouter de nouveaux utilisateurs
+        let newUserInfosElt = $(".user_infos.d-none")[0]
+        let copyNewUser = $(newUserInfosElt).clone()[0]
+        
+        numberNewUser = numberNewUser + 1
+
+        console.log(copyNewUser)
+        copyNewUser.dataset.userId = "new_" + numberNewUser
+        $(copyNewUser).find('.fa-minus-circle')[0].dataset.newUserId = numberNewUser
+        $($(copyNewUser).find('.fa-minus-circle')[0]).click(function(){
+            let userId = this.dataset.userDeleted
+            if (userId == 'new')
+            {
+                let newUserId = this.dataset.newUserId
+                console.log(newUserId)
+                let DivToRemove = $(".user_infos[data-user-id='new_" + newUserId + "']")
+                console.log(DivToRemove)
+                DivToRemove.removeClass('d-flex')
+                DivToRemove.removeClass('user_infos')
+                DivToRemove.remove()
+    
+            }
+            else{
+                usersToDelete.push(userId)
+                let DivToRemove = $(".user_infos[data-user-id='" + userId + "']")
+                DivToRemove.removeClass('d-flex')
+                DivToRemove.removeClass('user_infos')
+                DivToRemove.remove()
+                console.log(usersToDelete)
+            }
+        })
+        $(newUserInfosElt).removeClass('d-none')
+        console.log(copyNewUser)
+        $('.block-users-project').append(copyNewUser)
+
+        
+    })
+
+
+
+
+
 
     // we will send modifications when saving
     $('#btn-save').click(function(){
-        // we will collect data
-        let datas = {
-            'project': {
+        infosToSend = {}
+        // ajouter du code permettant d'envoyer des données par rapport au projet, utilisateurs et nouveaux utilisateurs
+        let projectDiv = $('#project_detail_content')[0] // we retrieve element that contains project id
+        let projectId = projectDiv.dataset.projectId // we get project id
+        let projectName = $('#id_name').val() // we get new project name
+        let projectDescription = $('#id_description').val() // we get new project description
+        infosToSend['project'] = {
+            'id': projectId,
+            'name': projectName,
+            'description': projectDescription
+        }
 
-            },
-            'users':{
+        // now we will retrieve users modifications
+        
+        let userInfosElts = $('.user_infos')
+        infosToSend['users'] = []
 
+        for (let i = 0; i < userInfosElts.length; i++){
+            
+
+            let userId = userInfosElts[i].dataset.userId
+            if (userId.includes('new') == true)
+            {
+                if ($(userInfosElts[i]).hasClass('d-none') == false) {
+                    let email = $(userInfosElts[i]).find('.new_user').val()
+                    let role = $(userInfosElts[i]).find('#id_name').val()
+                    let user = {
+                        'id' : 'new',
+                        'email' : email,
+                        'role': role
+                    }
+                    infosToSend['users'].push(user)
+                }
+            }
+            else{
+                let userRole = $('#role_user_' + userId).children()[0]
+                let roleId = $(userRole).val()
+                
+                let user = {
+                    'id': userId,
+                    'role': roleId
+                }
+                infosToSend['users'].push(user)
             }
         }
 
-        // TO MODIFY DOESNT WORK CORRECTLY
-        let project_id = $('.block-details-project')[0].id.split('_')[2]
-        let new_name = $('#project_'+project_id+'_name').children()[1].value
-        let new_description = $('#project_'+project_id+'_description').children()[0].value
-        if (new_name.length === 0)
-        {
-            console.log('Le nom du projet ne peut pas être vide !')
-            return false
-        }
+        // now we will add relations between user and project to delete if there is any
+        infosToSend['users_to_delete'] = usersToDelete
+        
+        console.log(infosToSend)
 
-        datas['project'][project_id] = {
-            'name': new_name,
-            'description': new_description
-        }
-
-        let user_infos = $('.user_infos')
-
-        for (let i=0; i < user_infos.length; i++){
-            let user_id = user_infos[i].children[0].id.split('_')[3]
-            let new_role_id = user_infos[i].children[0].children[1].value
-            if (new_role_id === ''){
-                console.log('Un role ne peut pas être vide')
-                return false
-            }
-            datas['users'][user_id] = new_role_id
-        } 
-        console.log(datas)
-
+        // we will send infosToSend to an url with post values
         $.ajax({
-            url : '/project/' + project_id + '/modify_project',
-            type :"post",
-            data : {
-                'datas' : datas
-            },
-            success : function(response){
-                console.log(response);
-                if (response.success == true)
-                {
-                   console.log('success') 
-                }
-                else if (response.success == false)
-                {
-                    console.log('erreur')
+            url: '/project/'+ infosToSend['project']['id'] + '/modify_project',
+
+            type: 'POST',
+
+            data: {'datas': JSON.stringify(infosToSend)},
+
+            success: function(results, status){
+                if (results.success ==true){
+                    window.location.replace("/project/1/details");
                 }
             },
-            error : function(response){
-                console.log("error requête ajax")
-            },
+
+            error: function(results, status, error){
+                console.log('erreur requête AJAX')
+            }
         })
+        
+        
     })
     
 

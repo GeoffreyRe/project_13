@@ -26,7 +26,7 @@
         </ul>
     </nav>
 </div>
-<div class="page-content">
+<div id="project_detail_content" class="page-content" data-project-id="{{project.id}}">
     {% if not modifications %}
     <h1 class="h4 pt-2 col-11 text-center">Informations générales</h1>
     {% if has_write_rights %}
@@ -47,6 +47,7 @@
         </div>
     <h2 class="h4 text-left px-4 pt-2">Utilisateurs</h2>
         <div class="block-users-project">
+            <p>créateur du projet : {{project.creator}}</p>
             {%for user_project in users_on_project %}
                 <div class="user_infos d-flex justify-content-between pl-5">
                     <p>{{user_project.user}} : {{user_project.user_role.get_name_display}}</p>
@@ -83,14 +84,25 @@
             <p>créateur du projet : {{project.creator}}</p>
             {{ formset.management_form }}
             {%for user_project_form in users_on_project %}
-                <div class="user_infos d-flex justify-content-between pl-5">
-                    <p id='project_user_id_{{user_project_form.id.value}}'>{{user_project_form.user}} : {{user_project_form.user_role}}</p>
+                <div class="user_infos d-flex justify-content-between pl-5" data-user-id="{{user_project_form.instance.id}}">
+                    <p id='project_user_id_{{user_project_form.id.value}}'>{{user_project_form.instance.user}} : 
+                    <span id="role_user_{{user_project_form.instance.id}}">{{user_project_form.user_role}}</span> 
+                    <i class="fas fa-minus-circle" data-user-deleted='{{user_project_form.instance.id}}' style="color:red;"></i></p>
                     
                 </div>
             {% endfor %}
+            <div class="d-none user_infos justify-content-between pl-5" data-user-id="new_0">
+                <p><input type="text" class="new_user" /> : 
+                {{role_form.name}}
+                <i class="fas fa-minus-circle" data-user-deleted="new" data-new-user-id="0" style="color:red;"></i></p>                
+            </div>
         </div>
+        <div class="pl-5 btn-append"><i class="fas fa-plus-circle fa-2x" style="color:green;"></i></div>
     <h2 class="h4 text-left px-4 pt-2">Fichiers de traductions</h2>
         <div class="block-files-project">
+        {% if not files %}
+        <p>Il n'y a pour l'instant aucun fichier de traduction</p>
+        {% endif %}
         </div>
     {% endif %}
 </div>

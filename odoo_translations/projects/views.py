@@ -4,8 +4,9 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.forms import modelformset_factory
 import json
+from users.models import User
 from .utils import nest_list
-from .forms import ProjectCreationForm
+from .forms import ProjectCreationForm, RoleForm
 from .models import Project, Invitation, UserProject
 from .decorators import user_is_assigned_to_project
 
@@ -59,7 +60,6 @@ def view_verification_project_name(request):
 @login_required
 def from_invitation_to_project(request):
     if request.method == "POST":
-        """
         result = True
         invitation_id = request.POST.get('invitation_id', None)
         try:
@@ -72,13 +72,11 @@ def from_invitation_to_project(request):
         if invitation is not None:
             result = invitation.from_invitation_to_project()
         return JsonResponse({'success' : result}, safe=False, status=200)
-        """
         return JsonResponse({'success' : True}, safe=False, status=200)
     
 @login_required
 def invitation_refused(request):
     if request.method == "POST":
-        """
         invitation_id = request.POST.get('invitation_id', None)
         success = False
         if invitation_id is not None:
@@ -92,9 +90,7 @@ def invitation_refused(request):
                 success=True
             return JsonResponse({'success' : success}, safe=False, status=200)
         return JsonResponse({'success' : success}, safe=False, status=200)
-    return JsonResponse({'success' : success}, safe=False, status=200)
-    """
-        return JsonResponse({'success' : True}, safe=False, status=200)
+    
 
 @login_required
 @user_is_assigned_to_project # custom decorator : see decorators.py module
@@ -126,22 +122,23 @@ def detail_project_modifications(request, project_id):
     if not request.user.has_rights_to_modify_project(project):
         # if user has not the rights to modify project, we redirect it
         # TODO: we could add a message to display to inform user that he coudn't do that
-        return redirect('project_detail')
+        return redirect('detail_project', project_id = project.id)
 
     project_form = ProjectCreationForm({'name':project.name, 'description':project.description})
     UserProjectFormset = modelformset_factory(UserProject, fields = ('user', 'user_role'), extra=0)
     user_project_formset = UserProjectFormset(queryset=UserProject.objects.filter(project=project))
+    new_role_form = RoleForm()
     #TODO: modifier ce bout de code car ce n'est pas le meilleur endroit pour le faire
     for form in user_project_formset:
         for field_name, field in form.fields.items():
             if field_name == "user":
                 field.widget.attrs['disabled'] = True
-    #import pdb;pdb.set_trace()
     context = {
         'users_on_project' : user_project_formset,
         'project': project,
         'project_f' : project_form,
-        'modifications':True}
+        'modifications':True,
+        'role_form': RoleForm}
 
     return render(request, 'projects/project_general_infos.html', context)
 
@@ -149,8 +146,28 @@ def detail_project_modifications(request, project_id):
 @login_required
 @user_is_assigned_to_project # custom decorator : see decorators.py module
 def modify_project(request, project_id):
-    import pdb; pdb.set_trace()
     if request.method == "POST":
-        datas = request.POST['datas_to_modify']
-        for project_tuple in datas['project']:
-            pass
+        user = request.user
+        datas = request.POST['datas']
+        datas = json.loads(datas)
+        project_datas = datas['project']
+        project_to_modify = Project.objects.get(id=datas['project']['id'])
+        project_to_modify.update_project(datas, user)
+        
+        return JsonResponse({'success' : True}, safe=False, status=200)
+
+
+
+def check_if_users_can_be_added_to_project(request):
+    if request.method == 'POST':
+        datas = request.POST['datas']
+        for user_email, user_role, project_id in datas:
+            try:
+                user = User.objects.get(email=user_email)
+            except ObjectDoesNotExist:
+                return JsonResponse({'success' : False}, safe=False, status=200)
+            if not user.is_on_project(project_id):
+                return JsonResponse({'success' : False}, safe=False, status=200)
+        
+        return JsonResponse({'success' : True}, safe=False, status=200)
+            

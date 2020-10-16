@@ -1,5 +1,5 @@
 from django.forms import ModelForm
-from .models import Project
+from .models import Project, Role
 
 
 class ProjectCreationForm(ModelForm):
@@ -14,6 +14,14 @@ class ProjectCreationForm(ModelForm):
     class Meta:
         model = Project
         fields = ['name', 'description', 'creation_date']
+        error_messages = {
+            
+            }
+
+class RoleForm(ModelForm):
+    class Meta:
+        model = Role
+        fields = ['name', 'id']
         error_messages = {
             
             }
