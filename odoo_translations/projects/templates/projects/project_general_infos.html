@@ -100,10 +100,22 @@
         <div class="pl-5 btn-append"><i class="fas fa-plus-circle fa-2x" style="color:green;"></i></div>
     <h2 class="h4 text-left px-4 pt-2">Fichiers de traductions</h2>
         <div class="block-files-project">
-        {% if not files %}
-        <p>Il n'y a pour l'instant aucun fichier de traduction</p>
-        {% endif %}
+            {% for file in files %}
+            <div class="file_infos justify-content-between pl-5 border rounded my-2">
+                <i class="fas fa-trash-alt" data-file-id={{file.id}}></i>
+                <p><a href="/media/{{file.original_file}}">{{file.name}}</a></p>
+                <p>Langue du fichier : {{file.get_translated_language_display}}</p>
+                <p>Fichier de template : {% if file.is_template %} <input type="checkbox" checked disabled />{% else %}<input type="checkbox" disabled />{% endif %}</p>             
+            </div>
+            {% endfor %}
+            <div id="form_file_template" class="d-none file_infos justify-content-between pl-5 border rounded my-2">
+                <i class="fas fa-trash-alt" data-file-id="new"></i>
+                <p>{{file_form.original_file}}</p>
+                <p>Langue du fichier : {{file_form.translated_language}}</p>
+                <p>Fichier de template : {{file_form.is_template}}</p>             
+            </div>
         </div>
+        <div class="pl-5 btn-append-file"><i class="fas fa-plus-circle fa-2x" style="color:green;"></i></div>
     {% endif %}
 </div>
 </div>

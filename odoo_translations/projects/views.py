@@ -5,6 +5,8 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.forms import modelformset_factory
 import json
 from users.models import User
+from translations.forms import TranslationFileForm
+from translations.models import TranslationFile
 from .utils import nest_list
 from .forms import ProjectCreationForm, RoleForm
 from .models import Project, Invitation, UserProject
@@ -102,9 +104,11 @@ def detail_project(request, project_id):
         return HttpResponse("Le projet demandé n'existe pas")
     users_on_project = UserProject.objects.filter(project=project)
     has_write_rights = request.user.has_rights_to_modify_project(project)
+    translation_files = TranslationFile.objects.filter(project=project)
     context = {
         'users_on_project' : users_on_project,
         'project': project,
+        'files': translation_files,
         'has_write_rights': has_write_rights,
         'modifications': False}
 
@@ -128,17 +132,17 @@ def detail_project_modifications(request, project_id):
     UserProjectFormset = modelformset_factory(UserProject, fields = ('user', 'user_role'), extra=0)
     user_project_formset = UserProjectFormset(queryset=UserProject.objects.filter(project=project))
     new_role_form = RoleForm()
-    #TODO: modifier ce bout de code car ce n'est pas le meilleur endroit pour le faire
-    for form in user_project_formset:
-        for field_name, field in form.fields.items():
-            if field_name == "user":
-                field.widget.attrs['disabled'] = True
+    new_file_form = TranslationFileForm()
+    translation_files = TranslationFile.objects.filter(project=project)
+    
     context = {
         'users_on_project' : user_project_formset,
         'project': project,
+        'files': translation_files,
         'project_f' : project_form,
         'modifications':True,
-        'role_form': RoleForm}
+        'role_form': RoleForm,
+        'file_form': new_file_form}
 
     return render(request, 'projects/project_general_infos.html', context)
 

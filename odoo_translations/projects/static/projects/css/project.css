@@ -82,4 +82,32 @@ ul ul
     margin-right:5px;
 }
 
+.block-files-project
+{
+    width:fit-content;
+}
+
+.file_infos
+{
+    position:relative;
+    width:auto;
+    padding:1rem;
+    margin-left:1rem;
+    overflow-x: hidden;
+}
+
+.fa-trash-alt
+{
+    position:absolute;
+    right:5px;
+    top:5px;
+    transition:color 0.4s;
+    cursor:pointer;
+}
+
+.fa-trash-alt:hover
+{
+    color:red;
+}
+
 

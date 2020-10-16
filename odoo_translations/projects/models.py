@@ -50,11 +50,6 @@ class Project(models.Model):
         related_name="projects_created"
     )
     creation_date = models.DateTimeField(default=timezone.now, null=False, verbose_name="Date de création")
-    template_file = models.OneToOneField('translations.TranslationFile',
-                                        on_delete=models.SET_NULL,
-                                        related_name="project_where_template",
-                                        null=True,
-                                        blank=True)
     objects = CustomProjectManager()
     
     def __str__(self):

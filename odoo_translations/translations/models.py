@@ -12,9 +12,13 @@ class TranslationFile(models.Model):
     """
     This model represents project's translation files.
     """
+    TRANSLATED_LANGAGES = [
+        ('fr', 'Français'),
+        ('ndlr', 'Néerlandais')
+    ]
     # file name of file.
     # by default, if will be the name of the original file but it can be changed
-    name = models.CharField(max_length=40, null=False, blank=False)
+    name = models.CharField(max_length=40, null=False, blank=True)
     is_template = models.BooleanField(default=False)
     project = models.ForeignKey(
         'projects.Project',
@@ -23,7 +27,20 @@ class TranslationFile(models.Model):
         null=False
     )
     # the language that the file translates. If template, can be null.
-    translated_language = models.CharField(max_length=40, null=True)
+    translated_language = models.CharField(max_length=40, 
+                                            null=False,
+                                            choices=TRANSLATED_LANGAGES)
+
+    def save(self, *args, **kwargs):
+        if not self.name:
+            self.name = self.get_name_value()
+        super().save(*args, **kwargs)
+    
+    def get_name_value(self):
+        extension = '.po' if not self.is_template else '.pot'
+        project_name = self.project.name.replace(' ', '_')
+        return project_name + "_" + self.translated_language + extension
+
 
     def get_file_location(instance, filename):
         """

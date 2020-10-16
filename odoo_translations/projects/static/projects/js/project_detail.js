@@ -1,5 +1,5 @@
 $(document).ready(function(){
-
+    console.log('code après')
     let vertical_menu_open = false
     $('.li-to-extend').click(function(){
         if (vertical_menu_open === false)
@@ -89,6 +89,32 @@ $(document).ready(function(){
 
 
 
+    // we will add a event to add and remove translations file
+    $(".btn-append-file").click(function(){
+        let newFormFile = $('#form_file_template').clone()[0]
+        $(newFormFile).removeClass('d-none')
+        newFormFile.dataset.fileId = "new"
+        $(newFormFile).removeAttr('id')
+        $('.block-files-project').append(newFormFile)
+        $('.fa-trash-alt').off('click')
+        $('.fa-trash-alt').click(function(){
+            if (this.dataset.fileId !== 'new'){
+                filesToDelete.push(this.dataset.fileId)
+            }
+            $(this).closest('.file_infos').remove()
+            console.log(filesToDelete)
+        })
+
+    })
+
+    let filesToDelete = []
+    $('.fa-trash-alt').click(function(){
+        if (this.dataset.fileId !== 'new'){
+            filesToDelete.push(this.dataset.fileId)
+        }
+        $(this).closest('.file_infos').remove()
+        console.log(filesToDelete)
+    })
 
 
 
@@ -143,6 +169,7 @@ $(document).ready(function(){
         // now we will add relations between user and project to delete if there is any
         infosToSend['users_to_delete'] = usersToDelete
         
+        // now we will add files to append and files to delete 
         console.log(infosToSend)
 
         // we will send infosToSend to an url with post values
@@ -155,7 +182,7 @@ $(document).ready(function(){
 
             success: function(results, status){
                 if (results.success ==true){
-                    window.location.replace("/project/1/details");
+                    window.location.replace("/project/" + projectId +"/details");
                 }
             },
 
