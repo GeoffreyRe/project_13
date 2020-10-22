@@ -1,5 +1,4 @@
 $(document).ready(function(){
-    console.log('code après')
     let vertical_menu_open = false
     $('.li-to-extend').click(function(){
         if (vertical_menu_open === false)
@@ -19,6 +18,7 @@ $(document).ready(function(){
             vertical_menu_open = false 
         }
     })
+
 
     let usersToDelete = []
     $('.fa-minus-circle').click(function(){

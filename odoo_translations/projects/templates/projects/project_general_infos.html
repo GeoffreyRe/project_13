@@ -27,96 +27,118 @@
     </nav>
 </div>
 <div id="project_detail_content" class="page-content" data-project-id="{{project.id}}">
+<div class="w-90 m-auto">
     {% if not modifications %}
     <h1 class="h4 pt-2 col-11 text-center">Informations générales</h1>
     {% if has_write_rights %}
-    <div class="text-left px-4 pb-2">
+    <div class="text-left pb-2">
         <button class="btn btn-info rounded"><a href="{% url 'detail_project_modifications' project_id=project.id %}" class="disabled-link-style">Modifier</a></button>
     </div>
     {% endif %}
-    <h2 class="h4 text-left px-4 pt-2">Détails</h2>
+    <h2 class="h4 text-left pt-2">Détails</h2>
         <div class="block-details-project">
-            <div class="d-flex justify-content-around">
-            <p id='project_{{project.id}}_name'>Nom du projet : {{project.name}}</p>
-            <p>Date de création : {{project.creation_date}}</p>
+            <div class="d-flex justify-content-start">
+            <p id='project_{{project.id}}_name' class="pr-5"><span class="font-weight-bold">Nom du projet</span> : {{project.name}}</p>
+            <p><span class="font-weight-bold">Date de création</span> : {{project.creation_date}}</p>
             </div>
             <div class="d-flex flex-column justify-content-start">
-            <p>Description du projet : </p>
+            <p><span class="font-weight-bold">Description du projet<span> : </p>
             <p id='project_{{project.id}}_description'>{{project.description}}</p>
             </div>
         </div>
-    <h2 class="h4 text-left px-4 pt-2">Utilisateurs</h2>
+    <h2 class="h4 text-left pt-2">Utilisateurs</h2>
         <div class="block-users-project">
-            <p>créateur du projet : {{project.creator}}</p>
+            <p><span class="font-weight-bold">créateur du projet</span> : {{project.creator}}</p>
             {%for user_project in users_on_project %}
-                <div class="user_infos d-flex justify-content-between pl-5">
-                    <p>{{user_project.user}} : {{user_project.user_role.get_name_display}}</p>
+                <div class="user_infos d-flex justify-content-between">
+                    <p><span class="font-weight-bold">{{user_project.user}}</span> : {{user_project.user_role.get_name_display}}</p>
                 </div>
             {% endfor %}
         </div>
-    <h2 class="h4 text-left px-4 pt-2">Fichiers de traductions</h2>
+    <h2 class="h4 text-left pt-2">Fichiers de traductions</h2>
         <div class="block-files-project">
             {% if not files %}
             <p>Il n'y a aucun fichier de traduction</p>
+            {% else %}
+            <div class="block-files-project">
+                {% for file in files %}
+                <div class="file_infos justify-content-between border rounded my-2">
+                    <p><a href="/media/{{file.original_file}}">{{file.name}}</a></p>
+                    <p><span class="font-weight-bold">Langue du fichier</span> : {{file.get_translated_language_display}}</p>
+                    <p><span class="font-weight-bold">Fichier de template</span> : {% if file.is_template %} <input type="checkbox" checked disabled />{% else %}<input type="checkbox" disabled />{% endif %}</p>             
+                </div>
+                {% endfor %}
+            </div>
             {% endif %}
         </div>
     {% else %}
     <!--In the case of user clicks on the modify button-->
     <h1 class="h4 pt-2 col-11 text-center">Informations générales</h1>
-    <div class="text-left px-4 pb-2">
+    <div class="text-left pb-2">
         <button id = "btn-save" class="btn btn-info rounded"><a href="#" class="disabled-link-style">Sauvegarder</a></button>
         <button class="btn btn-info rounded"><a href="{% url 'detail_project' project_id=project.id %}" class="disabled-link-style">Annuler</a></button>
     </div>
-    <h2 class="h4 text-left px-4 pt-2">Détails</h2>
+    <h2 class="h4 text-left pt-2">Détails</h2>
         <div id="detail_project_{{project.id}}"class="block-details-project">
-            <div class="d-flex justify-content-around">
+            <div class="d-flex justify-content-start">
             {{ project_f.management_form }}
-            <p id='project_{{project.id}}_name' class="d-flex justify-content-start"><span class="element-no-wrap">Nom du projet :</span>{{project_f.name}}</p>
-            <p>Date de création : {{project.creation_date}}</p>
+            <p id='project_{{project.id}}_name' class="d-flex justify-content-start pr-5"><span class="element-no-wrap font-weight-bold">Nom du projet :</span>{{project_f.name}}</p>
+            <p><span class="font-weight-bold">Date de création</span> : {{project.creation_date}}</p>
             </div>
             <div class="d-flex flex-column justify-content-start">
-            <p>Description du projet : </p>
+            <p><span class="font-weight-bold">Description du projet</span> : </p>
             <p id='project_{{project.id}}_description'>{{project_f.description}}</p>
             </div>
         </div>
-    <h2 class="h4 text-left px-4 pt-2">Utilisateurs</h2>
+    <h2 class="h4 text-left pt-2">Utilisateurs</h2>
+        <div class="block-users">
         <div class="block-users-project">
-            <p>créateur du projet : {{project.creator}}</p>
+            <p><span class="font-weight-bold">créateur du projet</span> : {{project.creator}}</p>
             {{ formset.management_form }}
             {%for user_project_form in users_on_project %}
-                <div class="user_infos d-flex justify-content-between pl-5" data-user-id="{{user_project_form.instance.id}}">
-                    <p id='project_user_id_{{user_project_form.id.value}}'>{{user_project_form.instance.user}} : 
+                <div class="user_infos d-flex justify-content-between" data-user-id="{{user_project_form.instance.id}}">
+                    <p id='project_user_id_{{user_project_form.id.value}}' class="font-weight-bold">{{user_project_form.instance.user}} : 
                     <span id="role_user_{{user_project_form.instance.id}}">{{user_project_form.user_role}}</span> 
                     <i class="fas fa-minus-circle" data-user-deleted='{{user_project_form.instance.id}}' style="color:red;"></i></p>
                     
                 </div>
             {% endfor %}
-            <div class="d-none user_infos justify-content-between pl-5" data-user-id="new_0">
+            <div class="d-none user_infos justify-content-between" data-user-id="new_0">
                 <p><input type="text" class="new_user" /> : 
                 {{role_form.name}}
                 <i class="fas fa-minus-circle" data-user-deleted="new" data-new-user-id="0" style="color:red;"></i></p>                
             </div>
         </div>
-        <div class="pl-5 btn-append"><i class="fas fa-plus-circle fa-2x" style="color:green;"></i></div>
-    <h2 class="h4 text-left px-4 pt-2">Fichiers de traductions</h2>
+        <div class="btn-append d-flex justify-content-center"><i class="fas fa-plus-circle fa-2x" style="color:green;"></i></div>
+        </div>
+        
+    <h2 class="h4 text-left pt-2">Fichiers de traductions</h2>
+        <div class="block-files">
         <div class="block-files-project">
-            {% for file in files %}
-            <div class="file_infos justify-content-between pl-5 border rounded my-2">
-                <i class="fas fa-trash-alt" data-file-id={{file.id}}></i>
-                <p><a href="/media/{{file.original_file}}">{{file.name}}</a></p>
-                <p>Langue du fichier : {{file.get_translated_language_display}}</p>
-                <p>Fichier de template : {% if file.is_template %} <input type="checkbox" checked disabled />{% else %}<input type="checkbox" disabled />{% endif %}</p>             
-            </div>
-            {% endfor %}
-            <div id="form_file_template" class="d-none file_infos justify-content-between pl-5 border rounded my-2">
+            {% if not files %}
+            <p>Il n'y a aucun fichier de traduction pour ce projet !</p>
+            {% else %}
+                {% for file in files %}
+                <div class="file_infos justify-content-between border rounded my-2">
+                    <i class="fas fa-trash-alt" data-file-id={{file.id}}></i>
+                    <p><a href="/media/{{file.original_file}}">{{file.name}}</a></p>
+                    <p><span class="font-weight-bold">Langue du fichier</span> : {{file.get_translated_language_display}}</p>
+                    <p><span class="font-weight-bold">Fichier de template</span> : {% if file.is_template %} <input type="checkbox" checked disabled />{% else %}<input type="checkbox" disabled />{% endif %}</p>             
+                </div>
+                {% endfor %}
+            {% endif %}
+            <div id="form_file_template" class="d-none file_infos justify-content-between border rounded my-2">
                 <i class="fas fa-trash-alt" data-file-id="new"></i>
                 <p>{{file_form.original_file}}</p>
-                <p>Langue du fichier : {{file_form.translated_language}}</p>
-                <p>Fichier de template : {{file_form.is_template}}</p>             
+                <p><span class="font-weight-bold">Langue du fichier</span> : {{file_form.translated_language}}</p>
+                <p><span class="font-weight-bold">Fichier de template : {{file_form.is_template}}</p>             
             </div>
         </div>
-        <div class="pl-5 btn-append-file"><i class="fas fa-plus-circle fa-2x" style="color:green;"></i></div>
+        <div class="btn-append-file d-flex justify-content-center"><i class="fas fa-plus-circle fa-2x" style="color:green;"></i></div>
+        </div>
+        
     {% endif %}
+    </div>
 </div>
 </div>
 {% endblock %}

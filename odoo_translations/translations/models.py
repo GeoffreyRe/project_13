@@ -23,7 +23,7 @@ class TranslationFile(models.Model):
     project = models.ForeignKey(
         'projects.Project',
         on_delete=models.CASCADE,
-        related_name="tranlation_files",
+        related_name="translation_files",
         null=False
     )
     # the language that the file translates. If template, can be null.
