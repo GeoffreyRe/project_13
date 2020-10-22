@@ -166,10 +166,32 @@ $(document).ready(function(){
             }
         }
 
+        // now we will check if there is new files to add 
+
+        let newFiles = $(".file_infos[data-file-id='new']")
+        let formDataFiles = new FormData()
+        let totalFiles = 0
+        for (let k=0;k < newFiles.length; k++) {
+            totalFiles += 1
+            let formDataFile = new FormData()
+            let newFile = newFiles[k]
+            let fileData = $(newFile).find("input[type='file']").prop('files')[0]
+            let fileLanguage = $(newFile).find("select[name='translated_language']").val()
+            let isTemplate = $(newFile).find("#id_is_template").prop("checked")
+            console.log(fileData, fileLanguage, isTemplate)
+            formDataFiles.append('file_' + k, fileData)
+            formDataFiles.append('lang_' + k, fileLanguage)
+            formDataFiles.append('template_' + k, isTemplate)
+
+
+        }
+        formDataFiles.append('files_to_delete', JSON.stringify(filesToDelete))
+        formDataFiles.append('files_total', totalFiles)
         // now we will add relations between user and project to delete if there is any
         infosToSend['users_to_delete'] = usersToDelete
         
         // now we will add files to append and files to delete 
+        formDataFiles.append('infos_user',JSON.stringify(infosToSend))
         console.log(infosToSend)
 
         // we will send infosToSend to an url with post values
@@ -177,8 +199,10 @@ $(document).ready(function(){
             url: '/project/'+ infosToSend['project']['id'] + '/modify_project',
 
             type: 'POST',
+            processData: false,
+            contentType: false,
+            data: formDataFiles,// {'datas': JSON.stringify(infosToSend)},
 
-            data: {'datas': JSON.stringify(infosToSend)},
 
             success: function(results, status){
                 if (results.success ==true){

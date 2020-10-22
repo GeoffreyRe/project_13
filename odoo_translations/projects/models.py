@@ -87,13 +87,37 @@ class Project(models.Model):
     
     def update_project(self, values, user):
         with transaction.atomic():
-            self.modify_name(values['project']['name'])
-            self.modify_description(values['project']['description'])
-            self.modify_roles_of_user_on_project(values['users'], user)
-            self.delete_users_on_project(values['users_to_delete'])
+            project_values = values['infos_user']
+            self.modify_name(project_values['project']['name'])
+            self.modify_description(project_values['project']['description'])
+            self.modify_roles_of_user_on_project(project_values['users'], user)
+            self.delete_users_on_project(project_values['users_to_delete'])
+            self.add_files_to_project(values['files'])
+            self.delete_files_of_project(values['files_to_delete'])
     
     def delete_users_on_project(self, user_ids):
         self.userproject_set.filter(pk__in=user_ids).delete()
+
+    def add_files_to_project(self, files):
+        for file in files:
+            TranslationFileModel = apps.get_model('translations', 'TranslationFile')
+            new_file = TranslationFileModel(
+                project=self,
+                translated_language=file['lang'],
+                is_template=file['template'],
+                original_file=file['file']
+            )
+            new_file.save()
+    
+    def delete_files_of_project(self, files_ids):
+        for file_id in files_ids:
+            TranslationFileModel = apps.get_model('translations', 'TranslationFile')
+            try:
+                file_to_delete = TranslationFileModel.objects.get(id=int(file_id))
+            except DoesNotExist:
+                pass
+            
+            file_to_delete.delete()
             
 
 

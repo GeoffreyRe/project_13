@@ -7,7 +7,7 @@ import json
 from users.models import User
 from translations.forms import TranslationFileForm
 from translations.models import TranslationFile
-from .utils import nest_list
+from .utils import nest_list, organise_datas
 from .forms import ProjectCreationForm, RoleForm
 from .models import Project, Invitation, UserProject
 from .decorators import user_is_assigned_to_project
@@ -152,14 +152,12 @@ def detail_project_modifications(request, project_id):
 def modify_project(request, project_id):
     if request.method == "POST":
         user = request.user
-        datas = request.POST['datas']
-        datas = json.loads(datas)
-        project_datas = datas['project']
-        project_to_modify = Project.objects.get(id=datas['project']['id'])
+        #import pdb; pdb.set_trace()
+        datas = organise_datas(request.POST, request.FILES)
+        project_to_modify = Project.objects.get(id=datas['infos_user']['project']['id'])
         project_to_modify.update_project(datas, user)
         
         return JsonResponse({'success' : True}, safe=False, status=200)
-
 
 
 def check_if_users_can_be_added_to_project(request):
