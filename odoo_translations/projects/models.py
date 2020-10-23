@@ -157,6 +157,7 @@ class Invitation(models.Model):
     
     def is_refused(self):
         self.accepted = False
+        self.save()
     
     def from_invitation_to_project(self):
         self.is_accepted()
