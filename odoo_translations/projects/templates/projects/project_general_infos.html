@@ -9,6 +9,7 @@
 
 {% block content %}
 <div class="masthead">
+<div id="error-message-popup" class="d-none"><p id='error-message'></p></div>
 <div class="vertical-menu d-flex flex-column py-5 pr-3">
     <h4>{{project.name}}</h4>
     <nav>
@@ -99,14 +100,14 @@
                 <div class="user_infos d-flex justify-content-between" data-user-id="{{user_project_form.instance.id}}">
                     <p id='project_user_id_{{user_project_form.id.value}}' class="font-weight-bold">{{user_project_form.instance.user}} : 
                     <span id="role_user_{{user_project_form.instance.id}}">{{user_project_form.user_role}}</span> 
-                    <i class="fas fa-minus-circle" data-user-deleted='{{user_project_form.instance.id}}' style="color:red;"></i></p>
+                    <i class="fas fa-trash-alt btn-delete-user" data-user-deleted='{{user_project_form.instance.id}}'></i></p>
                     
                 </div>
             {% endfor %}
             <div class="d-none user_infos justify-content-between" data-user-id="new_0">
                 <p><input type="text" class="new_user" /> : 
                 {{role_form.name}}
-                <i class="fas fa-minus-circle" data-user-deleted="new" data-new-user-id="0" style="color:red;"></i></p>                
+                <i class="fas fa-trash-alt btn-delete-user" data-user-deleted="new" data-new-user-id="0"></i></p>                
             </div>
         </div>
         <div class="btn-append d-flex justify-content-center"><i class="fas fa-plus-circle fa-2x" style="color:green;"></i></div>
@@ -120,7 +121,7 @@
             {% else %}
                 {% for file in files %}
                 <div class="file_infos justify-content-between border rounded my-2">
-                    <i class="fas fa-trash-alt" data-file-id={{file.id}}></i>
+                    <i class="fas fa-trash-alt btn-delete-file" data-file-id={{file.id}}></i>
                     <p><a href="/media/{{file.original_file}}">{{file.name}}</a></p>
                     <p><span class="font-weight-bold">Langue du fichier</span> : {{file.get_translated_language_display}}</p>
                     <p><span class="font-weight-bold">Fichier de template</span> : {% if file.is_template %} <input type="checkbox" checked disabled />{% else %}<input type="checkbox" disabled />{% endif %}</p>             
@@ -128,7 +129,7 @@
                 {% endfor %}
             {% endif %}
             <div id="form_file_template" class="d-none file_infos justify-content-between border rounded my-2">
-                <i class="fas fa-trash-alt" data-file-id="new"></i>
+                <i class="fas fa-trash-alt btn-delete-file" data-file-id="new"></i>
                 <p>{{file_form.original_file}}</p>
                 <p><span class="font-weight-bold">Langue du fichier</span> : {{file_form.translated_language}}</p>
                 <p><span class="font-weight-bold">Fichier de template : {{file_form.is_template}}</p>             

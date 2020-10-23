@@ -110,7 +110,7 @@ ul ul
     overflow-x: hidden;
 }
 
-.fa-trash-alt
+.btn-delete-file
 {
     position:absolute;
     right:5px;
@@ -119,7 +119,18 @@ ul ul
     cursor:pointer;
 }
 
-.fa-trash-alt:hover
+.btn-delete-file:hover
+{
+    color:red;
+}
+
+.btn-delete-user
+{
+    cursor: pointer;
+    transition:color 0.4s;
+}
+
+.btn-delete-user:hover
 {
     color:red;
 }
@@ -128,5 +139,24 @@ ul ul
 {
     width:90%;
 }
+
+
+#error-message-popup
+{
+    position:fixed;
+    width:fit-content;
+    color:white;
+    background-color: rgb(131, 0, 0);
+    bottom:15px;
+    right:15px;
+}
+
+#error-message
+{
+    margin-bottom:0;
+    padding:1rem;
+}
+
+
 
 

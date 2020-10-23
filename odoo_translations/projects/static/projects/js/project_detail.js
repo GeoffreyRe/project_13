@@ -19,9 +19,96 @@ $(document).ready(function(){
         }
     })
 
+    // function that will checks user input before send with ajax
+    let timeOutId = undefined
+    let transitionTimeOutId = undefined
+
+
+    function displayErrorPopup(errorMsg){
+        if (timeOutId != undefined){
+            clearTimeout(timeOutId)
+        }
+        if (transitionTimeOutId != undefined){
+            clearTimeout(transitionTimeOutId)
+        }
+        $('#error-message-popup').css({
+            transition:'opacity 0s',
+            opacity:1
+        })
+        transitionTimeOutId = setTimeout(function(){
+            $('#error-message-popup').css({
+                transition:'opacity 1s',
+                opacity:0
+            })
+        }, 3000)
+        $('#error-message').empty()
+        $('#error-message').append(errorMsg)
+        $('#error-message-popup').removeClass('d-none')
+        timeOutId = setTimeout(function(){
+            $('#error-message-popup').addClass('d-none')
+        }, 4000)
+
+    }
+
+
+    function checkBeforeSend(){
+        let errorMsg = ""
+        // check of project name
+        let projectNameVal = $('#id_name').val()
+        if (projectNameVal == ''){
+            errorMsg = 'Le nom de projet ne peut pas être vide'
+            $('#id_name').css('border', 'solid 1px rgb(255,33,25)')
+
+            displayErrorPopup(errorMsg)
+
+            throw errorMsg
+            
+        }
+
+        // check of users
+        let users = $('.user_infos:not(.d-none)')
+        if (users.length == 0){
+            errorMsg = "Aucun utilisateur n'est présent sur le projet"
+            displayErrorPopup(errorMsg)
+
+            throw errorMsg
+        }
+        for (let i=0; i < users.length; i++){
+            if ($(users[i]).find('select').val() == ""){
+                let errorMsg = "Le rôle de l'utilisateur ne peut pas être vide"
+                $(users[i]).find('select').css('border', 'solid 1px rgb(255,33,25)')
+                displayErrorPopup(errorMsg)
+
+                throw errorMsg
+            }
+            if ($(users[i]).find('.new_user').length == 1){
+                if ($(users[i]).find('.new_user').val() == ""){
+                    errorMsg = "L'email de l'utilisateur ne peut pas être nul !"
+                    $(users[i]).find('.new_user').css('border', 'solid 1px rgb(255,33,25)')
+                    displayErrorPopup(errorMsg)
+                    throw errorMsg
+                    
+                }
+            }
+        }
+    }
+
+    $('#id_name').focus(function(){
+        $(this).css('border', '')
+    })
+
+    $('.user_infos:not(.d-none) select').focus(function(){
+        $(this).css('border', '')
+    })
+
+    $('.user_infos:not(.d-none) .new_user').focus(function(){
+        $(this).css('border', '')
+    })
+
+
 
     let usersToDelete = []
-    $('.fa-minus-circle').click(function(){
+    $('.btn-delete-user').click(function(){
         let userId = this.dataset.userDeleted
         if (userId == 'new')
         {
@@ -57,8 +144,8 @@ $(document).ready(function(){
 
         console.log(copyNewUser)
         copyNewUser.dataset.userId = "new_" + numberNewUser
-        $(copyNewUser).find('.fa-minus-circle')[0].dataset.newUserId = numberNewUser
-        $($(copyNewUser).find('.fa-minus-circle')[0]).click(function(){
+        $(copyNewUser).find('.btn-delete-user')[0].dataset.newUserId = numberNewUser
+        $($(copyNewUser).find('.btn-delete-user')[0]).click(function(){
             let userId = this.dataset.userDeleted
             if (userId == 'new')
             {
@@ -84,6 +171,14 @@ $(document).ready(function(){
         console.log(copyNewUser)
         $('.block-users-project').append(copyNewUser)
 
+        $('.user_infos:not(.d-none) select').focus(function(){
+            $(this).css('border', '')
+        })
+    
+        $('.user_infos:not(.d-none) .new_user').focus(function(){
+            $(this).css('border', '')
+        })
+
         
     })
 
@@ -96,8 +191,8 @@ $(document).ready(function(){
         newFormFile.dataset.fileId = "new"
         $(newFormFile).removeAttr('id')
         $('.block-files-project').append(newFormFile)
-        $('.fa-trash-alt').off('click')
-        $('.fa-trash-alt').click(function(){
+        $('.btn-delete-file').off('click')
+        $('.btn-delete-file').click(function(){
             if (this.dataset.fileId !== 'new'){
                 filesToDelete.push(this.dataset.fileId)
             }
@@ -108,7 +203,7 @@ $(document).ready(function(){
     })
 
     let filesToDelete = []
-    $('.fa-trash-alt').click(function(){
+    $('.btn-delete-file').click(function(){
         if (this.dataset.fileId !== 'new'){
             filesToDelete.push(this.dataset.fileId)
         }
@@ -120,6 +215,7 @@ $(document).ready(function(){
 
     // we will send modifications when saving
     $('#btn-save').click(function(){
+        checkBeforeSend()
         infosToSend = {}
         // ajouter du code permettant d'envoyer des données par rapport au projet, utilisateurs et nouveaux utilisateurs
         let projectDiv = $('#project_detail_content')[0] // we retrieve element that contains project id
