@@ -91,6 +91,34 @@ $(document).ready(function(){
                 }
             }
         }
+
+        // check of templates
+        let files = $('.file_infos')
+        
+        for (let i=0; i < files.length; i++){
+            let file = files[i]
+            if (file.dataset.fileId =="new"){
+                let errorMsg = "Il n'y a aucun fichier de traduction"
+                let inputFile = $(file).find("input[type=file]")
+                if ($(inputFile).prop('files').length == 0){
+                    $(inputFile).css('color', 'rgb(255,33,25)')
+                    displayErrorPopup(errorMsg)
+
+                    throw errorMsg
+                }
+                if (($(file).find('#id_translated_language').val() == "") && ($(file).find('#id_is_template').prop('checked') == false)){
+
+                    $(file).find('#id_translated_language').css('border', 'solid 1px rgb(255,33,25)')
+                    errorMsg = "Un fichier de traduction doit avoir un langue !"
+                    displayErrorPopup(errorMsg)
+                    $(file).find('#id_translated_language').focus(function(){
+                        $(this).css('border', '')
+                    })
+                    throw errorMsg
+
+                }
+            }
+        }
     }
 
     $('#id_name').focus(function(){
@@ -103,6 +131,10 @@ $(document).ready(function(){
 
     $('.user_infos:not(.d-none) .new_user').focus(function(){
         $(this).css('border', '')
+    })
+
+    $('input[type=file]').focus(function(){
+        $(this).css('color', '')
     })
 
 
@@ -198,6 +230,9 @@ $(document).ready(function(){
             }
             $(this).closest('.file_infos').remove()
             console.log(filesToDelete)
+        })
+        $('input[type=file]').focus(function(){
+            $(this).css('color', '')
         })
 
     })
