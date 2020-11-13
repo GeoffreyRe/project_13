@@ -1,8 +1,12 @@
-from django.db import models
-from django.db.models.signals import post_delete
-from django.dispatch import receiver 
 import os
 import logging
+from django.db import models
+from django.db.models.signals import post_delete
+from django.dispatch import receiver
+from django.apps import apps
+from .exceptions import NoTranslationFoundInFileError, NoOdooTranslationFileHeader
+
+
 
 
 logger = logging.getLogger(__name__)
@@ -28,18 +32,64 @@ class TranslationFile(models.Model):
     )
     # the language that the file translates. If template, can be null.
     translated_language = models.CharField(max_length=40, 
-                                            null=False,
+                                            null=True,
                                             choices=TRANSLATED_LANGAGES)
 
     def save(self, *args, **kwargs):
         if not self.name:
-            self.name = self.get_name_value()
+            self.name = os.path.basename(self.original_file.name)
         super().save(*args, **kwargs)
+
     
-    def get_name_value(self):
-        extension = '.po' if not self.is_template else '.pot'
-        project_name = self.project.name.replace(' ', '_')
-        return project_name + "_" + self.translated_language + extension
+    def analyze_content(self):
+        """
+        This method will analyse content of the file related with the instance of TranslationFile
+        """
+        with open(self.original_file.path, "r", encoding="utf-8") as f:
+            # readlines() will split all the lines of the file and put them in a list
+            content = f.readlines()
+            blocks = []
+            last_block = 0
+            # we will try to separate each block found
+            for i, content_line in enumerate(content):
+                # with strip method, we remove white spaces + line breaks
+                content[i] = content_line.strip()
+                if content[i] == "":
+                    blocks.append(content[last_block:i])
+                    last_block = i + 1
+            # now we will check if there is the header and if there is min 2 blocks (header + a traduction block)
+
+            if len(blocks) < 2:
+                raise NoTranslationFoundInFileError("Aucun block de traduction n'a été trouvé dans le fichier {}".format(self.name))
+
+            # check of first block wich must be header :
+            import pdb;pdb.set_trace()
+            header_content = blocks[0]
+            if header_content[0] != "# Translation of Odoo Server.":
+                raise NoOdooTranslationFileHeader("Erreur lors de l'analyse du fichier : ligne 1 --- le premier bloc n'est pas le header")
+
+            # we save the header
+            TranslationBlock = apps.get_model('translations', 'TranslationBlock')
+            header_block = TranslationBlock(
+                file=self,
+                is_header=True,
+                raw_text="\n".join(blocks[0])
+            )
+
+            header_block.save()
+
+            # we will analyze each block found
+            for block in blocks[1:]:
+                pass
+                # translation block must begins with a line that specifies the module
+                #TODO: checker la première ligne : si ce n'est pas par rapport au module == Erreur
+                # ensuite retrouver le module qui correspond si il existe dans les "instances", sinon le créer
+                # Ensuite retrouver les msgstr et msgid du block ---> si pas trouvé ou vide (pour les non templates) == Erreur
+                # Enfin, créer pour chaque ligne, une TranslationLine. Si problème == Erreur 
+
+
+
+    
 
 
     def get_file_location(instance, filename):
@@ -49,12 +99,8 @@ class TranslationFile(models.Model):
         filename : the name of the file that has been uploaded
         """
         project_directory_name = str(instance.project.id) + "_" + instance.project.name
-        # the file must have .pot if it is a template file
-        # for a regular file, is 
-        extension = ".pot" if instance.is_template == True else ".po"
-        file_name = instance.translated_language if not instance.is_template else "template"
-        complete_name = file_name + extension
-        return "translation_files/{0}/{1}".format(project_directory_name, complete_name)
+        
+        return "translation_files/{0}/{1}".format(project_directory_name, filename)
 
     # file wich will be uploaded
     # warning : when an instance get deleted, the file is not deleted so we have to create
@@ -93,7 +139,9 @@ class TranslationBlock(models.Model):
                             on_delete=models.CASCADE,
                             null=False,
                             related_name="translation_blocks")
-    original_text = models.TextField(null=False, blank=False)
+    raw_text = models.TextField(null=False)
+    is_header = models.BooleanField(default=False)
+    original_text = models.TextField(null=True, blank=True)
     translated_text = models.TextField(null=True)
 
     def __str__(self):

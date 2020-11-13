@@ -4,6 +4,7 @@ from django.utils import timezone
 from django.apps import apps
 from users.models import User
 from .managers import CustomProjectManager
+from translations.exceptions import NoFileForProjectError
 
 # Create your models here.
 class NameValues(models.TextChoices):
@@ -118,7 +119,23 @@ class Project(models.Model):
                 pass
             
             file_to_delete.delete()
+    
+    def analyze_translation_files(self):
+        """
+        This method will launch analysis of every translation files of a project
+        """
+        if len(self.translation_files) == 0:
+            # check if there is at least one translation file to analyse.
+            # TODO: check if there is not only a .pot file. We need at least a .po file
+            raise NoFileForProjectError("Il n'y a pas de fichier de traduction à analyser pour ce projet")
+        
+        try:
+            with transaction.atomic():
+                for translation_file in self.translation_files:
+                    translation_file.analyze_content()
             
+        except FileParsingError as e:
+            return str(e)
 
 
 
