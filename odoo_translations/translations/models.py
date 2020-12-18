@@ -80,11 +80,12 @@ class TranslationFile(models.Model):
 
             # we will analyze each block found
             line_position = len(blocks[0]) + 1# line position will be displayed if errors occur.
-            import pdb; pdb.set_trace()
             for block in blocks[1:]:
                 errors = TranslationBlock.check_errors_content(block, line_position)
                 if errors[0] is True:
                     raise TranslationBlockStructureNotGoodError(errors[1])
+            
+            import pdb; pdb.set_trace()
                 
 
     def get_file_location(instance, filename):
@@ -182,20 +183,27 @@ class TranslationBlock(models.Model):
         # now we have to find msgid and msgstr
         msgid_text = None
         msgstr_text = None
-        lines = []
+        supported_lines = []
+
         for pos, line in enumerate(data[1:]):
             # now we will try to see if we could find msgid and msgstr, else we raise error
             if line.startswith('msgid "'):
-                msgid_text = line[6:]
+                msgid_text = []
+                msgid_text.append(line[6:].strip())
                 i = 1
-                next_line = '"' # start value to enter in while loop
-                while next_line.startswith('"') and ((pos + i) < len(data[1:])):
+                if (pos + i) < len(data[1:]):
                     next_line = data[1:][pos + i]
-                    msgid_text += "\n"
-                    msgid_text  += next_line
-                    i+= 1
+                else:
+                    next_line = ""
+
+                while next_line.startswith('"'):
+                    msgid_text.append(next_line.strip())
+                    i += 1
                     if (pos + i) < len(data[1:]):
-                        msgid_text += "\n"
+                        next_line = data[1:][pos + i]
+                    else:
+                        next_line = ""
+                    
 
                     
                     
@@ -205,21 +213,32 @@ class TranslationBlock(models.Model):
                     # if we found a msgstr before msgid, this is not a good structure
                     return (True,
                     "Erreur : msgstr trouvé avant msgid")
-                msgstr_text = line[7:]
 
+                msgstr_text = []
+                msgstr_text.append(line[6:].strip())
                 i = 1
-                while next_line.startswith('"') and ((pos + i) < len(data[1:])):
+                if (pos + i) < len(data[1:]):
                     next_line = data[1:][pos + i]
-                    msgid_text += "\n"
-                    msgid_text  += next_line
-                    i+= 1
+                else:
+                    next_line = ""
 
-            elif line.startswith('#: model:') or line.startswith("#: code:") or line.startswith('#, python-format'):
-                lines.append(line.strip())
+                while next_line.startswith('"'):
+                    msgstr_text.append(next_line.strip())
+                    i += 1
+                    if (pos + i) < len(data[1:]):
+                        next_line = data[1:][pos + i]
+                    else:
+                        next_line = ""
+                    
 
+            elif line.startswith('#: model:') or line.startswith("#: code:") or line.startswith('#, python-format') or line.startswith('#: '):
+                supported_lines.append(line.strip())
+
+            
             elif line.startswith('"'):
                 # if the line begins with this part, then it means it is a part of msgid or msgstr
-                pass 
+                pass
+
             else:
                 return ('true', 'Erreur : ligne "{}" non reconnue'.format(line.strip()))
         
@@ -229,7 +248,11 @@ class TranslationBlock(models.Model):
             return (True,
             "Erreur : msgstr et/ou msgid non trouvé dans le bloc")
         
-        return (False, {"module": module, "msgid": msgid_text, "msgstr": msgstr_text, "lines": lines})
+        return (False,
+        {"module": module,
+        "msgid": msgid_text,
+        "msgstr": msgstr_text,
+        "supported_lines": supported_lines})
         
 
     
