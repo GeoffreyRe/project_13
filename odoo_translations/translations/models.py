@@ -378,7 +378,7 @@ class Instance(models.Model):
     for a view : view_form_res_partner_id
     etc...
     """
-    name = models.CharField(max_length=60, null=False, blank=False)
+    name = models.CharField(max_length=300, null=False, blank=False)
     instance_type = models.ForeignKey(
                                     InstanceType,
                                     on_delete= models.PROTECT,
@@ -446,7 +446,7 @@ class TranslationLine(models.Model):
             line_type_value =  data['line_type']
             instance_line_type = LineType.objects.get(name=line_type_value)
             
-            instance_name_parts = instance_name.split('.')
+            instance_name_parts = instance_name.split('.') if instance_type_name != "code" else instance_name.split(':')
             if len(instance_name_parts) != 2 and instance_type_name != 'module':
                 # we have to get module name and instance name
                 # but for a module line, it doesn't matter
@@ -455,6 +455,11 @@ class TranslationLine(models.Model):
             module_instance_type = InstanceType.objects.get(name='module')
             model_instance_type = InstanceType.objects.get(name='ir.model')
             field_instance_type = InstanceType.objects.get(name='ir.model.fields')
+            view_instance_type = InstanceType.objects.get(name='ir.ui.view')
+            actwindow_instance_type = InstanceType.objects.get(name='ir.actions.act_window')
+            menu_instance_type = InstanceType.objects.get(name='ir.ui.menu')
+            code_instance_type = InstanceType.objects.get(name='code')
+            code_pos_instance_type = InstanceType.objects.get(name='code.position')
             
             if instance_type_name == 'ir.model.fields':
                 if not instance_name_parts[1].startswith('field_'):
@@ -532,6 +537,96 @@ class TranslationLine(models.Model):
                 
                 self.instance = module_instance
                 self.line_type = instance_line_type
+            
+            elif instance_type_name == "ir.ui.view":
+                view_instance = Instance.objects.filter(name=instance_name_parts[1],
+                                                            instance_type=view_instance_type)
+                
+                if len(view_instance) == 1:
+                    view_instance = view_instance[0]
+                else:
+                    view_instance = Instance.objects.create(
+                        name=instance_name_parts[1],
+                        instance_type= view_instance_type,
+                        project=self.block.file.project
+                    )
+
+                self.instance = view_instance
+                self.line_type = instance_line_type
+            
+            elif instance_type_name == "ir.actions.act_window":
+                actwindow_instance = Instance.objects.filter(name=instance_name_parts[1],
+                                                            instance_type=actwindow_instance_type)
+                
+                if len(actwindow_instance) == 1:
+                    actwindow_instance = actwindow_instance[0]
+                else:
+                    actwindow_instance = Instance.objects.create(
+                        name=instance_name_parts[1],
+                        instance_type= actwindow_instance_type,
+                        project=self.block.file.project
+                    )
+
+                self.instance = actwindow_instance
+                self.line_type = instance_line_type
+            
+            elif instance_type_name == "ir.ui.menu":
+                menu_instance = Instance.objects.filter(name=instance_name_parts[1],
+                                                            instance_type=menu_instance_type)
+                
+                if len(menu_instance) == 1:
+                    menu_instance = menu_instance[1]
+                else:
+                    menu_instance = Instance.objects.create(
+                        name=instance_name_parts[0],
+                        instance_type= menu_instance_type,
+                        project=self.block.file.project
+                    )
+
+                self.instance = menu_instance
+                self.line_type = instance_line_type
+            
+            elif instance_type_name == "code":
+                code_instance = Instance.objects.filter(name=instance_name_parts[0],
+                                                            instance_type=code_instance_type)
+                
+                if len(code_instance) == 1:
+                    code_instance = code_instance[0]
+                else:
+                    code_instance = Instance.objects.create(
+                        name=instance_name_parts[0],
+                        instance_type= code_instance_type,
+                        project=self.block.file.project
+                    )
+
+                code_pos_instance = Instance.objects.filter(name=instance_name_parts[1],
+                                                            instance_type=code_pos_instance_type,
+                                                            parent=code_instance)
+                if len(code_pos_instance) == 1:
+                    code_pos_instance = code_pos_instance[0]
+                else:
+                    code_pos_instance = Instance.objects.create(
+                        name=instance_name_parts[1],
+                        instance_type= code_pos_instance_type,
+                        project=self.block.file.project,
+                        parent=code_instance
+                    )
+                  
+                self.instance = code_pos_instance
+                self.line_type = instance_line_type
+        else:
+            # if instance is False, it means that the line is unkown
+            other_instance_type = InstanceType.objects.get(name="other")
+            other_line_type = LineType.objects.get(name="other")
+            other_instance, created = Instance.objects.get_or_create(
+                name=data['line'],
+                instance_type=other_instance_type,
+                project=self.block.file.project
+                )
+            self.instance = other_instance
+            self.line_type = other_line_type
+                
+
         
         self.save()
 
