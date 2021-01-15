@@ -58,11 +58,20 @@ class TranslationFile(models.Model):
             # we will try to separate each block found
             for i, content_line in enumerate(content):
                 # with strip method, we remove white spaces + line breaks
+                # warning : with this method : there must have a space at the end of file.
+                # otherwise, the last block won't be taken into account
                 content[i] = content_line.strip()
                 if content[i] == "":
                     blocks.append(content[last_block:i])
                     last_block = i + 1
             # now we will check if there is the header and if there is min 2 blocks (header + a traduction block)
+
+            # warning : with this method : there must have a space at the end of file.
+            # otherwise, the last block won't be taken into account, so we could do this way
+            if content[-1].strip() != "":
+                blocks.append(content[last_block:])
+
+            #import pdb;pdb.set_trace()
 
             if len(blocks) < 2:
                 raise NoTranslationFoundInFileError("Aucun block de traduction n'a été trouvé dans le fichier {}".format(self.name))
@@ -84,8 +93,11 @@ class TranslationFile(models.Model):
                 errors = TranslationBlock.check_errors_content(block, line_position)
                 if errors[0] is True:
                     raise TranslationBlockStructureNotGoodError(errors[1])
+                # if there is no errors, we will create the block
+                TranslationBlock.objects.create_block_from_data(errors[1], file=self)
+
             
-            import pdb; pdb.set_trace()
+            
                 
 
     def get_file_location(instance, filename):
@@ -147,6 +159,63 @@ class TranslationBlock(models.Model):
     def __str__(self):
         return "block de traduction numéro {} du fichier {}".format(self.id, self.file.name)
 
+
+    @staticmethod
+    def find_lines_infos(translation_lines):
+        """
+        This method will make a loop over the list of lines given to the function
+        and for each line, we will determine type of line, type of instance, ...
+        """
+        lines_infos = []
+        for line in translation_lines:
+            # for each line
+            line_infos = {"line": line}
+            line_parts = line.split(',')
+            if len(line_parts) == 1:
+                if line_parts[0].startswith('#. module:'):
+                    line_infos["instance"] = {
+                        "type": "module",
+                        "name": line[10:]
+                    }
+                    line_infos["line_type"] = "name"
+
+                elif line_parts[0].startswith('#: code:'):
+                    line_infos["instance"] = {
+                        "type": "code",
+                        "name": line[8:]
+                    }
+                    line_infos["line_type"] = "code"
+                
+                else:
+                    line_infos["instance"] = False
+
+            elif len(line_parts) == 2:
+                if line_parts[0] in ["#: model:ir.model",
+                "#: model:ir.model.fields", "#: model:ir.ui.menu",
+                "#: model:ir.actions.act_window", "#: model:ir.ui.view"]:
+                    line_instance = line_parts[1].split(':')
+                    if len(line_instance) == 2:
+                    
+                        line_infos["instance"] = {
+                        "type": line_parts[0][9:],
+                        "name": line_instance[1]
+                        }
+                        line_infos["line_type"] = line_instance[0]
+                    else:
+                        line_infos["instance"] = False
+
+
+                        
+                else:
+                    line_infos["instance"] = False
+            else:
+                line_infos["instance"] = False
+            
+            lines_infos.append(line_infos)
+        
+        return lines_infos
+
+
     @staticmethod
     def check_errors_content(data, line, is_header=False):
         """
@@ -173,17 +242,17 @@ class TranslationBlock(models.Model):
             "ligne {} : la structure du bloc n'est pas conforme -> taille du bloc inférieur à 4 lignes".format(line))
         
         # the first line of block should be the module specification line
+        supported_lines = []
         module_spec_line = data[0]
         if not module_spec_line.startswith("#. module:"):
             return (True,
             "ligne : {} --> ligne de specification du module attendue mais non trouvée".format(line))
         # we extract module name from module specification line
-        module = module_spec_line[10:].strip()
+        supported_lines.append(module_spec_line.strip())
         
         # now we have to find msgid and msgstr
         msgid_text = None
         msgstr_text = None
-        supported_lines = []
 
         for pos, line in enumerate(data[1:]):
             # now we will try to see if we could find msgid and msgstr, else we raise error
@@ -203,11 +272,7 @@ class TranslationBlock(models.Model):
                         next_line = data[1:][pos + i]
                     else:
                         next_line = ""
-                    
-
-                    
-                    
-            
+                        
             elif line.startswith('msgstr "'):
                 if msgid_text is None:
                     # if we found a msgstr before msgid, this is not a good structure
@@ -247,21 +312,21 @@ class TranslationBlock(models.Model):
             # we raise error
             return (True,
             "Erreur : msgstr et/ou msgid non trouvé dans le bloc")
+
+        # now we will find informations about lines (line type, instance to translate, etc...)
+        TranslationBlock = apps.get_model('translations', 'TranslationBlock')
+        supported_lines_parsed = TranslationBlock.find_lines_infos(supported_lines)
         
         return (False,
-        {"module": module,
-        "msgid": msgid_text,
-        "msgstr": msgstr_text,
-        "supported_lines": supported_lines})
-        
+        {"block": "\n".join(data),
+        "msgid": "\n".join(msgid_text) if isinstance(msgid_text, list) else msgid_text,
+        "msgstr": "\n".join(msgstr_text) if isinstance(msgstr_text, list) else msgstr_text,
+        "supported_lines": supported_lines_parsed
+        })
 
-    
-    
-    @staticmethod
-    def structure_content(data, is_header=False):
-        if is_header:
-            return {"raw_text": "\n".join(data),
-                    "lines":[]}
+
+            
+
 
 
 class LineType(models.Model):
@@ -274,6 +339,7 @@ class LineType(models.Model):
     - help
     - name
     - code_line
+    - arch_db
     - other
     """
     name = models.CharField(max_length=40,
@@ -282,12 +348,13 @@ class LineType(models.Model):
                             unique=True)
     def __str__(self):
         return "type de ligne : {}".format(self.name)
+
 class InstanceType(models.Model):
     """
     This model defines the type of an instance
     the current types are the following :
     - module
-    - ir_model
+    - ir.model
     - ir.model.field
     - ir.ui.view
     - ir.ui.menu
@@ -360,4 +427,118 @@ class TranslationLine(models.Model):
     
     def __str__(self):
         return "ligne de traduction numéro {}".format(self.id)
+
+    def analyze_infos(self, data):
+        InstanceType = apps.get_model('translations', 'InstanceType')
+        Instance = apps.get_model('translations', 'Instance')
+        LineType = apps.get_model('translations', 'LineType')
+        self.in_translation_file = True
+        if data['instance']:
+            # first we check if an instance type exists, else we raise error
+            instance_type_name = data['instance']['type']
+            instance_type = InstanceType.objects.filter(
+                name=instance_type_name)
+            if len(instance_type) != 1:
+                raise ValueError
+            # then if instance type exists, we will check if an instance
+            # of this type already exists, else we create it
+            instance_name = data['instance']['name']
+            line_type_value =  data['line_type']
+            instance_line_type = LineType.objects.get(name=line_type_value)
+            
+            instance_name_parts = instance_name.split('.')
+            if len(instance_name_parts) != 2 and instance_type_name != 'module':
+                # we have to get module name and instance name
+                # but for a module line, it doesn't matter
+                raise ValueError
+
+            module_instance_type = InstanceType.objects.get(name='module')
+            model_instance_type = InstanceType.objects.get(name='ir.model')
+            field_instance_type = InstanceType.objects.get(name='ir.model.fields')
+            
+            if instance_type_name == 'ir.model.fields':
+                if not instance_name_parts[1].startswith('field_'):
+                    raise ValueError
+                model_field_name = instance_name_parts[1][6:]
+                # now we have to find the model inside the field
+                found = False
+                model_field_parts = model_field_name.split('_')
+                module_instance = Instance.objects.filter(name=instance_name_parts[0],
+                                                        instance_type=module_instance_type)
+
+                while found == False and len(model_field_parts) >= 1:
+                    
+                    model_instance = Instance.objects.filter(name="_".join(model_field_parts),
+                                            instance_type=model_instance_type)
+                    
+                    if len(model_instance) == 1:
+                        model_instance = model_instance[0]
+                        found = True
+                    else:
+                        model_field_parts.pop()
+                
+                if found == False:
+                    print(model_field_name)
+                    raise ValueError
+
+                field_name = model_field_name.replace("_".join(model_field_parts), "", 1)
+                if field_name.startswith("_"):
+                    field_name = field_name[1:]
+
+                field_instance = Instance.objects.filter(name=field_name,
+                                            instance_type=field_instance_type,
+                                            parent=model_instance)
+                if len(field_instance) == 1:
+                    field_instance = field_instance[0]
+                else:
+                    field_instance = Instance.objects.create(
+                        name=field_name,
+                        instance_type=field_instance_type,
+                        parent=model_instance,
+                        project=self.block.file.project
+                    )
+                self.instance = field_instance
+                self.line_type = instance_line_type
+            
+            elif instance_type_name == "ir.model":
+                if not instance_name_parts[1].startswith('model_'):
+                    raise ValueError
+                    
+                model_name = instance_name_parts[1][6:]
+                model_instance = Instance.objects.filter(name=model_name,
+                                            instance_type=model_instance_type)
+                if len(model_instance) == 1:
+                    model_instance = model_instance[0]
+                else:
+                    model_instance = Instance.objects.create(
+                        name=model_name,
+                        instance_type=model_instance_type,
+                        project=self.block.file.project
+                    )
+                self.instance = model_instance
+                self.line_type = instance_line_type
+            
+            elif instance_type_name == "module":
+                module_instance = Instance.objects.filter(name=instance_name_parts[0],
+                                                            instance_type=module_instance_type)
+                if len(module_instance) == 1:
+                    module_instance = module_instance[0]
+                else:
+                    module_instance = Instance.objects.create(
+                        name=instance_name_parts[0],
+                        instance_type=module_instance_type,
+                        project=self.block.file.project
+                    )
+                
+                self.instance = module_instance
+                self.line_type = instance_line_type
+        
+        self.save()
+
+
+
+
+
+
+            
 
