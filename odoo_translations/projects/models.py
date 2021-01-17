@@ -118,7 +118,24 @@ class Project(models.Model):
             except DoesNotExist:
                 pass
             
+            
             file_to_delete.delete()
+    
+    def delete_translations(self):
+        """
+        This method will delete all translations of project
+        """
+        # first we delete translation blocks
+        for file in self.translation_files.all():
+            file.translation_blocks.all().delete()
+        
+        # then instance
+        Instance = apps.get_model('translations', 'Instance')
+
+        Instance.objects.filter(project=self).delete()
+
+        self.save()
+        
     
     def analyze_translation_files(self):
         """

@@ -48,6 +48,7 @@ class TranslationFile(models.Model):
         Méthode analyze_file va extraire du fichier, les blocs le composant
         pour chaque bloc, on va appeler une méthode sur l'objet bloc en lui passant le contenu du bloc
         """
+        
         with open(self.original_file.path, "r", encoding="utf-8") as f:
             # readlines() will split all the lines of the file and put them in a list
             content = f.readlines()
