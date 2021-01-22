@@ -11,7 +11,6 @@ def user_is_assigned_to_project(view_func):
     """
     @wraps(view_func)
     def actual_decorator(request, project_id, *args, **kwargs):
-        print(args, kwargs)
         if request.user is not None:
             requested_project = request.user.userproject_set.filter(project=project_id)
             # TODO : à réfléchir si il faut aussi vérifier si un tel projet existe, car si on demande
