@@ -116,6 +116,12 @@ class TranslationFile(models.Model):
 
     def __str__(self):
         return "fichier de traduction : {}".format(self.name)
+    
+
+
+    class Meta:
+        # rename table created by django in db
+        db_table="translation_file"
 
 # we will create a function that receives a signal when an instance
 # of TranslationFile is deleted. This function will delete the file

@@ -181,3 +181,7 @@ class TranslationLine(models.Model):
 
         
         self.save()
+    
+    class Meta:
+        # rename table created by django in db
+        db_table="translation_line"

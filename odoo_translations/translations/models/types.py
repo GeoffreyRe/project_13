@@ -21,6 +21,10 @@ class LineType(models.Model):
                             unique=True)
     def __str__(self):
         return "type de ligne : {}".format(self.name)
+    
+    class Meta:
+        # rename table created by django in db
+        db_table="line_type"
 
 class InstanceType(models.Model):
     """
@@ -40,3 +44,7 @@ class InstanceType(models.Model):
 
     def __str__(self):
         return "type d'instance : {}".format(self.name)
+    
+    class Meta:
+        # rename table created by django in db
+        db_table="instance_type"

@@ -182,3 +182,7 @@ class TranslationBlock(models.Model):
         "msgstr": "\n".join(msgstr_text) if isinstance(msgstr_text, list) else msgstr_text,
         "supported_lines": supported_lines_parsed
         })
+    
+    class Meta:
+        # rename table created by django in db
+        db_table="translation_block"
