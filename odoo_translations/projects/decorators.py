@@ -11,6 +11,7 @@ def user_is_assigned_to_project(view_func):
     """
     @wraps(view_func)
     def actual_decorator(request, project_id, *args, **kwargs):
+        print(args, kwargs)
         if request.user is not None:
             requested_project = request.user.userproject_set.filter(project=project_id)
             # TODO : à réfléchir si il faut aussi vérifier si un tel projet existe, car si on demande
@@ -19,7 +20,9 @@ def user_is_assigned_to_project(view_func):
             if len(requested_project) != 1:
                 messages.add_message(request, messages.INFO, "Vous ne pouvez pas accéder à ce projet")
                 return redirect('view_home')
-        return view_func(request, project_id)
+        
+        
+        return view_func(request, project_id, *args, **kwargs)
     
     return actual_decorator
         

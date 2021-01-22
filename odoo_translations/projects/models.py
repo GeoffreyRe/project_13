@@ -1,4 +1,5 @@
-from django.db import models, IntegrityError, transaction
+from django.db import models ,IntegrityError, transaction
+from django.db.models import Q
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 from django.apps import apps
@@ -153,6 +154,32 @@ class Project(models.Model):
             
         except FileParsingError as e:
             return str(e)
+    
+    def all_model_instances(self):
+        InstanceType = apps.get_model('translations.InstanceType')
+        Instance = apps.get_model('translations.Instance')
+        model_instance_type = InstanceType.objects.get(name="ir.model")
+        return Instance.objects.filter(project=self.id, instance_type=model_instance_type)
+    
+    def translations_models(self, model_id=False, with_fields=True):
+        """
+        Retrieve all translations from models associated with this project
+        if model_id is given, only find translations for this particular model
+        if with_fields is True, then retrieve also translations of fields wich are 'children' of models
+        else, only find translations for the model.
+        """
+        if model_id is not False:
+            Instance = apps.get_model('translations.Instance')
+            TranslationLine = apps.get_model('translations.TranslationLine')
+            model = Instance.objects.get(id=model_id)
+            query = Q(instance=model)
+            if with_fields: 
+                # if with_fields is True, then we add instances that are children of model (its fields)
+                field_instances = Instance.objects.filter(parent=model)
+                query = query | Q(instance__in=field_instances)
+            return (model, TranslationLine.objects.filter(query))
+
+
 
 
 

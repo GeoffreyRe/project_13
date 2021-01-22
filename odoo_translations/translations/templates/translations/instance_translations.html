@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Projet{% endblock %}
+{% block css_links %}
+
+<link href="{% static 'projects/css/project.css' %}" rel="stylesheet">
+
+{% endblock %}
+
+{% block content %}
+<div class="masthead">
+<div id="error-message-popup" class="d-none"><p id='error-message'></p></div>
+<div class="vertical-menu d-flex flex-column py-5 pr-3">
+    <h4>{{project.name}}</h4>
+    <nav>
+        <ul>
+            <li>Informations générales</li>
+            <li class="li-to-extend"><i class="fas fa-arrow-right d-inline mr-2 arrow-dropdown"></i>Traductions projet</li>
+            <ul class="sub-list-vertical-menu" style="visibility:hidden;">
+                <li>Voir toutes les traductions</li>
+                <li>Traductions par modèle Odoo</li>
+                <li>Traductions par vue Odoo</li>
+                <li>Traductions par menu Odoo</li>
+                <li>Traductions par code Odoo</li>
+                <li>Autres traductions</li>
+            </ul>
+        </ul>
+    </nav>
+</div>
+<div id="project_instances_list" class="page-content pb-5" data-project-id="{{project.id}}">
+    <h4 style="text-align:center; padding-top:1rem; padding-bottom:1rem;">Instance {{instance.name}}</h4>
+    {% for line in translation_lines %}
+    <div style="padding:0.4rem 3rem; max-height:20rem; overflow-y:scroll; margin-bottom:0.5rem; width:max-content; margin-left:auto; margin-right:auto; border:solid 1px black;">
+        <p><strong>Instance</strong>: {{line.instance.name}}</p>
+        {% if line.instance.parent %}
+        <p><strong>Dépend de</strong>: {{line.instance.parent.name}}</p>
+        {% endif %}
+        <p><strong>Type d'instance</strong>: {{line.instance.instance_type.name}}</p>
+        <p><strong>type de ligne</strong>: {{line.line_type.name}}</p>
+        <p><strong>Texte original </strong>:</p>
+        <textarea disabled>{{line.block.original_text}}</textarea>
+        <p><strong>Texte traduit </strong>:</p>
+        <textarea disabled>{{line.block.translated_text}}</textarea>
+
+
+    </div>
+    {% endfor %}
+</div>
+</div>
+{% endblock %}
+
+{% block javascript_files%}
+{% endblock %}

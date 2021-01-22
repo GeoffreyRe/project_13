@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Projet{% endblock %}
+{% block css_links %}
+
+<link href="{% static 'projects/css/project.css' %}" rel="stylesheet">
+
+{% endblock %}
+
+{% block content %}
+<div class="masthead">
+<div id="error-message-popup" class="d-none"><p id='error-message'></p></div>
+<div class="vertical-menu d-flex flex-column py-5 pr-3">
+    <h4>{{project.name}}</h4>
+    <nav>
+        <ul>
+            <li>Informations générales</li>
+            <li class="li-to-extend"><i class="fas fa-arrow-right d-inline mr-2 arrow-dropdown"></i>Traductions projet</li>
+            <ul class="sub-list-vertical-menu" style="visibility:hidden;">
+                <li>Voir toutes les traductions</li>
+                <li>Traductions par modèle Odoo</li>
+                <li>Traductions par vue Odoo</li>
+                <li>Traductions par menu Odoo</li>
+                <li>Traductions par code Odoo</li>
+                <li>Autres traductions</li>
+            </ul>
+        </ul>
+    </nav>
+</div>
+<div id="project_instances_list" class="page-content pb-5" data-project-id="{{project.id}}">
+    <h4>{{instance_type}}</h4>
+    {% if not instances %}
+        <p>Aucune instance n'existe pour l'instant</p>
+    {% else %}
+        <ul>
+        {% for instance in instances %}
+            <li><a href="{% url 'model_translations' project_id=instance.project.id model_id=instance.id %}">{{instance.name}}</a></li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+</div>
+</div>
+{% endblock %}
+
+{% block javascript_files%}
+{% endblock %}
