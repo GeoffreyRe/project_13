@@ -29,25 +29,59 @@
 </div>
 <div id="project_instances_list" class="page-content pb-5" data-project-id="{{project.id}}">
     <h4 style="text-align:center; padding-top:1rem; padding-bottom:1rem;">Instance {{instance.name}}</h4>
-    {% for line in translation_lines %}
-    <div style="padding:0.4rem 3rem; max-height:20rem; overflow-y:scroll; margin-bottom:0.5rem; width:max-content; margin-left:auto; margin-right:auto; border:solid 1px black;">
-        <p><strong>Instance</strong>: <em>{{line.instance.name}}</em></p>
-        {% if line.instance.parent %}
-        <p><strong>Dépend de</strong>: {{line.instance.parent.name}}</p>
-        {% endif %}
-        <p><strong>Type d'instance</strong>: {{line.instance.instance_type.name}}</p>
-        <p><strong>type de ligne</strong>: {{line.line_type.name}}</p>
-        <p><strong>Texte original </strong>:</p>
-        <textarea disabled>{{line.block.original_text}}</textarea>
-        <p><strong>Texte traduit </strong>:</p>
-        <textarea disabled>{{line.block.translated_text}}</textarea>
-
-
-    </div>
+    {% for block in translation_lines %}
+        <div style="padding:0.4rem 3rem; max-height:20rem; overflow-y:scroll; margin-bottom:0.5rem; width:max-content; margin-left:auto; margin-right:auto; border:solid 1px black;">
+            {%for line in block %}
+                {% if forloop.first %}
+                    <div data-caroussel-pos="1">
+                {% else %}
+                    <div style="display:none;" data-caroussel-pos="{{forloop.counter}}">
+                {% endif %}
+                <div style="float:right; margin-right:-35px;">
+                    <span><i class="prev-caroussel-btn fas fa-arrow-circle-left" style="margin-right:2px;"></i><i class="nxt-caroussel-btn fas fa-arrow-circle-right"></i></span><br>
+                    {{ forloop.counter }}/{{ block|length}}
+                </div>
+                <p><strong>Instance</strong>: <em>{{line.instance.name}}</em></p>
+                {% if line.instance.parent %}
+                <p><strong>Dépend de</strong>: {{line.instance.parent.name}}</p>
+                {% endif %}
+                <p><strong>Type d'instance</strong>: {{line.instance.instance_type.name}}</p>
+                <p><strong>type de ligne</strong>: {{line.line_type.name}}</p>
+            </div>
+            {% endfor %}
+            <hr />
+            <p><strong>Texte original </strong>:</p>
+            <textarea disabled>{{block.0.block.original_text}}</textarea>
+            <p><strong>Texte traduit </strong>:</p>
+            <textarea disabled>{{block.0.block.translated_text}}</textarea>
+        </div>
     {% endfor %}
 </div>
 </div>
 {% endblock %}
 
 {% block javascript_files%}
+<script>
+    $(document).ready(function(){
+        $('.nxt-caroussel-btn').click(function(){
+            let currentPos = parseInt($(this).parent().parent().parent()[0].dataset.carousselPos)
+            let nextPos = currentPos + 1
+            let nextCaroussel = $(this).parent().parent().parent().parent().find('div[data-caroussel-pos="' + nextPos.toString(10) + '"]')
+            if (nextCaroussel.length == 1){
+                $(this).parent().parent().parent().hide()
+                nextCaroussel.show()
+            }
+        })
+
+        $('.prev-caroussel-btn').click(function(){
+            let currentPos = parseInt($(this).parent().parent().parent()[0].dataset.carousselPos)
+            let prevPos = currentPos - 1
+            let prevCaroussel = $(this).parent().parent().parent().parent().find('div[data-caroussel-pos="' + prevPos.toString(10) + '"]')
+            if (prevCaroussel.length == 1){
+                $(this).parent().parent().parent().hide()
+                prevCaroussel.show()
+            }
+        })
+    })
+</script>
 {% endblock %}

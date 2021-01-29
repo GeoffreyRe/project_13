@@ -1,5 +1,5 @@
 import json
-
+from django.apps import apps
 def nest_list(list):
     # refactoriser cette fonction avec une compréhension de liste
     index = 0
@@ -27,3 +27,31 @@ def organise_datas(datas, files):
     organised_datas['files_to_delete'] = json.loads(datas['files_to_delete'])
 
     return organised_datas
+
+def regroup_lines_by_block(lines):
+    """
+    This function will regroup lines into block for presentation purpose
+    lines --> TranslationLine object
+    return --> a list of lists. each sublist is a "block"
+    """
+    lines_in_blocks = []
+    blocks = []
+    InstanceType = apps.get_model('translations.InstanceType')
+    module_type = InstanceType.objects.get(name="module")
+    for line in lines:
+        # for each line, we check if we already add it into a block
+        # if it is the case, we don't add it a second time (but can be changed)
+        # else, we find other lines of the block of the line (excepted module line and the line itself)
+        if line.id in lines_in_blocks:
+            continue
+
+        lines_in_blocks.append(line.id)
+        related_lines =line.block.translation_lines.exclude(
+            instance__instance_type=module_type).exclude(
+                instance__instance_type=module_type).exclude(id=line.id)
+        related_lines_ids = related_lines.values_list('id', flat=True)
+        
+        lines_in_blocks += related_lines_ids
+        blocks.append([line] + [related_line for related_line in related_lines])
+    return blocks
+

@@ -20,7 +20,7 @@ def model_translation_list(request, project_id):
 def model_translations(request, project_id, model_id):
     Project = apps.get_model('projects.Project')
     project = Project.objects.get(id=project_id)
-    model, translation_lines = project.translations_models(model_id=model_id)
+    model, translation_lines = project.translations_instances(instance_id=model_id)
 
     context = {'translation_lines': translation_lines,
                 'instance': model}

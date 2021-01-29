@@ -5,6 +5,7 @@ from django.utils import timezone
 from django.apps import apps
 from users.models import User
 from .managers import CustomProjectManager
+from projects.utils import regroup_lines_by_block
 from translations.exceptions import NoFileForProjectError
 
 # Create your models here.
@@ -161,23 +162,26 @@ class Project(models.Model):
         model_instance_type = InstanceType.objects.get(name="ir.model")
         return Instance.objects.filter(project=self.id, instance_type=model_instance_type)
     
-    def translations_models(self, model_id=False, with_fields=True):
+    def translations_instances(self, instance_id=False, with_children=True):
         """
-        Retrieve all translations from models associated with this project
-        if model_id is given, only find translations for this particular model
+        Retrieve all translations from instance associated with this project
+        if instance_id is given, only find translations for this particular model
         if with_fields is True, then retrieve also translations of fields wich are 'children' of models
         else, only find translations for the model.
         """
-        if model_id is not False:
-            Instance = apps.get_model('translations.Instance')
-            TranslationLine = apps.get_model('translations.TranslationLine')
-            model = Instance.objects.get(id=model_id)
-            query = Q(instance=model)
-            if with_fields: 
+        Instance = apps.get_model('translations.Instance')
+        TranslationLine = apps.get_model('translations.TranslationLine')
+        if instance_id is not False:
+            instance = Instance.objects.get(id=instance_id)
+            query = Q(instance=instance)
+            if with_children: 
                 # if with_fields is True, then we add instances that are children of model (its fields)
-                field_instances = Instance.objects.filter(parent=model)
-                query = query | Q(instance__in=field_instances)
-            return (model, TranslationLine.objects.filter(query))
+                children_instances = Instance.objects.filter(parent=instance)
+                query = query | Q(instance__in=children_instances)
+            
+            translation_lines = TranslationLine.objects.filter(query)
+            blocks = regroup_lines_by_block(translation_lines)
+            return (instance, blocks)
 
 
 
