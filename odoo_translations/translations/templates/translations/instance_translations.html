@@ -10,7 +10,7 @@
 {% block content %}
 <div class="masthead">
 <div id="error-message-popup" class="d-none"><p id='error-message'></p></div>
-<div class="vertical-menu d-flex flex-column py-5 pr-3">
+<div class="d-md-none vertical-menu d-flex flex-column py-5 pr-3">
     <h4>{{project.name}}</h4>
     <nav>
         <ul>
@@ -27,10 +27,11 @@
         </ul>
     </nav>
 </div>
-<div id="project_instances_list" class="page-content pb-5" data-project-id="{{project.id}}">
+<div id="project_instances_list" class="container inner-container pb-5" data-project-id="{{project.id}}">
     <h4 style="text-align:center; padding-top:1rem; padding-bottom:1rem;">Instance {{instance.name}}</h4>
     {% for block in translation_lines %}
-        <div style="padding:0.4rem 3rem; max-height:20rem; overflow-y:scroll; margin-bottom:0.5rem; width:max-content; margin-left:auto; margin-right:auto; border:solid 1px black;">
+        <div class="col-lg-8 col-12" style="padding:0.4rem 3rem; max-height:20rem; overflow-y:scroll; margin-bottom:0.5rem; margin-left:auto; margin-right:auto; border:solid 1px black;">
+            <div class="line-infos">
             {%for line in block %}
                 {% if forloop.first %}
                     <div data-caroussel-pos="1">
@@ -49,6 +50,7 @@
                 <p><strong>type de ligne</strong>: {{line.line_type.name}}</p>
             </div>
             {% endfor %}
+            </div>
             <hr />
             <p><strong>Texte original </strong>:</p>
             <textarea disabled>{{block.0.block.original_text}}</textarea>

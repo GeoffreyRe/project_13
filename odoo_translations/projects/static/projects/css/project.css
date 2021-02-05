@@ -157,6 +157,11 @@ ul ul
     padding:1rem;
 }
 
+.line-infos{
+    position:relative;
+    min-width:80%;
+}
+
 
 
 
