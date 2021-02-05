@@ -12,7 +12,8 @@ def model_translation_list(request, project_id):
     models = project.all_model_instances()
 
     context = {'instances': models,
-                'instance_type': 'Modèles'}
+                'instance_type': 'Modèles',
+                'project': project}
     return render(request, 'translations/instances_list.html', context)
 
 @login_required
@@ -23,7 +24,8 @@ def model_translations(request, project_id, model_id):
     model, translation_lines = project.translations_instances(instance_id=model_id)
 
     context = {'translation_lines': translation_lines,
-                'instance': model}
+                'instance': model,
+                'project': project}
     return render(request, 'translations/instance_translations.html', context)
 
     
