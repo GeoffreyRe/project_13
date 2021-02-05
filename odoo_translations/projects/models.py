@@ -156,11 +156,11 @@ class Project(models.Model):
         except FileParsingError as e:
             return str(e)
     
-    def all_model_instances(self):
+    def all_instances(self, type="ir.model"):
         InstanceType = apps.get_model('translations.InstanceType')
         Instance = apps.get_model('translations.Instance')
-        model_instance_type = InstanceType.objects.get(name="ir.model")
-        return Instance.objects.filter(project=self.id, instance_type=model_instance_type)
+        instance_type = InstanceType.objects.get(name=type)
+        return Instance.objects.filter(project=self.id, instance_type=instance_type)
     
     def translations_instances(self, instance_id=False, with_children=True):
         """

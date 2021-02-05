@@ -18,8 +18,8 @@
             <li class="li-to-extend"><i class="fas fa-arrow-right d-inline mr-2 arrow-dropdown"></i>Traductions projet</li>
             <ul class="sub-list-vertical-menu" style="visibility:hidden;">
                 <li>Voir toutes les traductions</li>
-                <li><a href="{% url 'model_list' project_id=project.id %}" class="text-decoration-none text-reset">Traductions par modèle Odoo</a></li>
-                <li>Traductions par vue Odoo</li>
+                <li><a href="{% url 'instances_list' project_id=project.id instance_type='models' %}" class="text-decoration-none text-reset">Traductions par modèle Odoo</a></li>
+                <li><a href="{% url 'instances_list' project_id=project.id instance_type='views' %}" class="text-decoration-none text-reset">Traductions par vue Odoo</a></li>
                 <li>Traductions par menu Odoo</li>
                 <li>Traductions par code Odoo</li>
                 <li>Autres traductions</li>
