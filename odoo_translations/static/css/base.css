@@ -1,4 +1,9 @@
 .masthead
 {
     min-height:calc(100vh - 6rem - 19.2px);
+    padding-top:0 !important;
+}
+
+.navbar-static{
+    position: static !important;
 }
