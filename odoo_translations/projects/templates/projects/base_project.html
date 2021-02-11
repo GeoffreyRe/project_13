@@ -14,15 +14,16 @@
     <h4>{{project.name}}</h4>
     <nav>
         <ul>
-            <li>Informations générales</li>
+            <li><a href="{% url 'detail_project' project_id=project.id %}" class="text-decoration-none text-reset">Informations générales</a></li>
             <li class="li-to-extend"><i class="fas fa-arrow-right d-inline mr-2 arrow-dropdown"></i>Traductions projet</li>
             <ul class="sub-list-vertical-menu" style="visibility:hidden;">
                 <li>Voir toutes les traductions</li>
                 <li><a href="{% url 'instances_list' project_id=project.id instance_type='models' %}" class="text-decoration-none text-reset">Traductions par modèle Odoo</a></li>
                 <li><a href="{% url 'instances_list' project_id=project.id instance_type='views' %}" class="text-decoration-none text-reset">Traductions par vue Odoo</a></li>
-                <li>Traductions par menu Odoo</li>
-                <li>Traductions par code Odoo</li>
-                <li>Autres traductions</li>
+                <li><a href="{% url 'instances_list' project_id=project.id instance_type='menus' %}" class="text-decoration-none text-reset">Traductions par menu Odoo</a></li>
+                <li><a href="{% url 'instances_list' project_id=project.id instance_type='action-windows' %}" class="text-decoration-none text-reset">Traductions par Action window Odoo</a></li>
+                <li><a href="{% url 'instances_list' project_id=project.id instance_type='codes' %}" class="text-decoration-none text-reset">Traductions par code Odoo</a></li>
+                <li><a href="{% url 'instances_list' project_id=project.id instance_type='other' %}" class="text-decoration-none text-reset">Autres traductions</a></li>
             </ul>
         </ul>
     </nav>

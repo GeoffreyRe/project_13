@@ -7,7 +7,12 @@ from projects.decorators import user_is_assigned_to_project
 @login_required
 @user_is_assigned_to_project
 def instance_translation_list(request, project_id, instance_type):
-    instances_dict = {'models': 'ir.model', 'views': 'ir.ui.view'}
+    instances_dict = {'models': 'ir.model',
+    'views': 'ir.ui.view',
+    'menus': 'ir.ui.menu',
+    'action-windows': 'ir.actions.act_window',
+    'codes': 'code',
+    'other': 'other'}
     Project = apps.get_model('projects.Project')
     project = Project.objects.get(id=project_id)
     instances = project.all_instances(type=instances_dict[instance_type])
