@@ -7,6 +7,7 @@
         <p>Aucune instance n'existe pour l'instant</p>
     {% else %}
         <ul>
+            <li><a href="{% url 'all_instance_translations' project_id=project.id instance_type=instance_type %}">Voir toutes les traductions</a></li>
         {% for instance in instances %}
             <li><a href="{% url 'instance_translations' project_id=instance.project.id instance_id=instance.id instance_type=instance_type%}">{{instance.name}}</a></li>
         {% endfor %}

@@ -162,7 +162,7 @@ class Project(models.Model):
         instance_type = InstanceType.objects.get(name=type)
         return Instance.objects.filter(project=self.id, instance_type=instance_type)
     
-    def translations_instances(self, instance_id=False, with_children=True):
+    def translations_instances(self, instance_id=False, with_children=True, type=False):
         """
         Retrieve all translations from instance associated with this project
         if instance_id is given, only find translations for this particular model
@@ -175,15 +175,26 @@ class Project(models.Model):
             instance = Instance.objects.get(id=instance_id)
             query = Q(instance=instance)
             if with_children: 
-                # if with_fields is True, then we add instances that are children of model (its fields)
+                # if with_children is True, then we add instances that are children of model (its fields)
                 children_instances = Instance.objects.filter(parent=instance)
                 query = query | Q(instance__in=children_instances)
             
             translation_lines = TranslationLine.objects.filter(query)
             blocks = regroup_lines_by_block(translation_lines)
             return (instance, blocks)
+        
+        if type is not False:
+            instances = self.all_instances(type=type)
+            query = Q(instance__in=instances)
+            if with_children:
+                children_instances = Instance.objects.filter(parent__in=instances)
+                query = query | Q(instance__in=children_instances)
+            
+            translation_lines = TranslationLine.objects.filter(query)
+            blocks = regroup_lines_by_block(translation_lines)
+            return (instances, blocks)
 
-
+        
 
 
 
