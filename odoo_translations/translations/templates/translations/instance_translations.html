@@ -4,7 +4,7 @@
 <div id="project_instances_list" class="container inner-container pb-5" data-project-id="{{project.id}}">
     <h4 style="text-align:center; padding-top:1rem; padding-bottom:1rem;">
     {% if instance %}
-        Instance {{instance.name}}
+        Instance {{instance.name|truncatechars:28}}
     {% elif instance_type %}
         {{instance_type}}
     {% endif %}
@@ -22,7 +22,7 @@
                     <span><i class="prev-caroussel-btn fas fa-arrow-circle-left" style="margin-right:2px;"></i><i class="nxt-caroussel-btn fas fa-arrow-circle-right"></i></span><br>
                     {{ forloop.counter }}/{{ block|length}}
                 </div>
-                <p><strong>Instance</strong>: <em>{{line.instance.name}}</em></p>
+                <p><strong>Instance</strong>: <em>{{line.instance.name|truncatechars:28}}</em></p>
                 {% if line.instance.parent %}
                 <p><strong>Dépend de</strong>: {{line.instance.parent.name}}</p>
                 {% endif %}
