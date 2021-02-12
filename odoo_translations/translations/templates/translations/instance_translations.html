@@ -35,10 +35,13 @@
             <p><strong>Texte original </strong>:</p>
             <textarea disabled>{{block.lines.0.block.original_text}}</textarea>
             <p><strong>Texte traduit </strong>:</p>
-            <textarea id="translated_block_{{block.id}}">{{block.lines.0.block.translated_text}}</textarea>
+            <textarea class="translated_block" data-block-id="{{block.id}}" id="translated_block_{{block.id}}">{{block.lines.0.block.translated_text}}</textarea>
             <button class="reset-translation d-block" data-block-id="{{block.id}}">Réinitialiser</button>
         </div>
     {% endfor %}
+    <div class="text-center">
+        <button id="btn-save-translations">Sauvegarder</button>
+    </div>
 </div>
 {% endblock %}
 

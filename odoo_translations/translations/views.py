@@ -3,6 +3,7 @@ from django.apps import apps
 from django.contrib.auth.decorators import login_required
 from projects.decorators import user_is_assigned_to_project
 from django.http import HttpResponse, JsonResponse
+import json
 # Create your views here.
 
 INSTANCES_DICT = {'models': 'ir.model',
@@ -61,5 +62,15 @@ def get_block_translation(request):
         block = Block.objects.get(id=block_id)
         
         return JsonResponse({'success' : True, 'translation': block.translated_text}, safe=False, status=200)
+
+
+@login_required
+def save_translations_changes(request):
+    Block = apps.get_model('translations.TranslationBlock')
+    if request.method == 'POST':
+        block_data = json.loads(request.POST['data'])
+        Block.objects.update_translated_texts(block_data)
+
+        return JsonResponse({'success': True}, safe=False, status=200)
     
 

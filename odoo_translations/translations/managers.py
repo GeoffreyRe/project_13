@@ -28,3 +28,15 @@ class CustomTranslationBlockManager(models.Manager):
             for translation_line in data['supported_lines']:
                 new_translation_line = TranslationLine(block=block)
                 new_translation_line.analyze_infos(translation_line)
+
+    def update_translated_texts(self, values):
+        """
+        This method takes as argument a list of dict with 2 key/values: - id of block and new translated text
+        """
+        for block_val in values:
+            block_id = block_val['id']
+            if not block_val['translated_text']:
+                continue
+            block = self.get(id=block_id)
+            block.translated_text = block_val['translated_text']
+            block.save()
