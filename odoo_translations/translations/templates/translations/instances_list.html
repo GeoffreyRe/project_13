@@ -2,7 +2,7 @@
 {% load static %}
 {% block right_content_project %}
 <div id="project_instances_list" class="page-content pb-5" data-project-id="{{project.id}}">
-    <h4>{{instance_type}}</h4>
+    <h4 class='text-center'>{{instance_type}}</h4>
     {% if not instances %}
         <p>Aucune instance n'existe pour l'instant</p>
     {% else %}

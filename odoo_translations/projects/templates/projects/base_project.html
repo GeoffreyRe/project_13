@@ -8,9 +8,12 @@
 {% endblock %}
 
 {% block content %}
-<div class="masthead">
+<div class="masthead d-md-flex">
 <div id="error-message-popup" class="d-none"><p id='error-message'></p></div>
-<div class="d-none d-md-flex vertical-menu flex-column py-5 pr-3">
+<div id="sub-menu-tab" class="d-md-none rounded-right"><i class="fas fa-arrow-right"></i></div>
+<div id="sub-menu-translations" class="d-none d-md-flex vertical-menu flex-column py-5 pr-3">
+    <div id="close-sub-menu-tab" class="d-md-none rounded-left"><i class="fas fa-arrow-left"></i></div>
+    <div class="sub-menu-text">
     <h4>{{project.name}}</h4>
     <nav>
         <ul>
@@ -27,6 +30,7 @@
             </ul>
         </ul>
     </nav>
+    </div>
 </div>
 {% block right_content_project %}
 {% endblock %}

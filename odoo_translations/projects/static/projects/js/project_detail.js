@@ -348,6 +348,27 @@ $(document).ready(function(){
         
         
     })
+
+    // this part adds event wich opens the sub menu
+    $('#sub-menu-tab').click(function(){
+        let time = 400;
+        $('#sub-menu-translations').addClass('sub-menu-full-display')
+        $('#sub-menu-translations').animate({width: "100%", opacity:"1"}, time)
+        $('.sub-menu-text').css('opacity', '0')
+        setTimeout(function(){
+            $('.sub-menu-text').css('opacity', '1')
+        }, Math.trunc(time/1.5))
+    })
+
+    // this part adds event wich removes the sub menu
+    $('#close-sub-menu-tab').click(function(){
+        let time = 400;
+        $('#sub-menu-translations').animate({width: "1%", opacity:'0.1'}, time)
+        $('.sub-menu-text').css('opacity', '0')
+        setTimeout(function(){
+        $('#sub-menu-translations').removeClass('sub-menu-full-display')
+        }, time
+    )})
     
 
 }) //fin fonction ready
