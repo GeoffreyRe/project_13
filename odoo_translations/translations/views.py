@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.apps import apps
 from django.contrib.auth.decorators import login_required
 from projects.decorators import user_is_assigned_to_project
+from django.http import HttpResponse, JsonResponse
 # Create your views here.
 
 INSTANCES_DICT = {'models': 'ir.model',
@@ -49,5 +50,16 @@ def all_instance_translations(request, project_id, instance_type):
                 'instance_type': instance_type,
                 'project': project}
     return render(request, 'translations/instance_translations.html', context)
+
+
+@login_required
+def get_block_translation(request):
+    if request.method == "GET":
+        
+        block_id = int(request.GET['block'])
+        Block = apps.get_model('translations.TranslationBlock')
+        block = Block.objects.get(id=block_id)
+        
+        return JsonResponse({'success' : True, 'translation': block.translated_text}, safe=False, status=200)
     
 

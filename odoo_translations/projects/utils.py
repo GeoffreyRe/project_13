@@ -52,6 +52,7 @@ def regroup_lines_by_block(lines):
         related_lines_ids = related_lines.values_list('id', flat=True)
         
         lines_in_blocks += related_lines_ids
-        blocks.append([line] + [related_line for related_line in related_lines])
+        blocks.append({'id':line.block.id,
+        'lines': [line] + [related_line for related_line in related_lines]})
     return blocks
 

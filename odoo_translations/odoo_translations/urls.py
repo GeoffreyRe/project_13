@@ -22,7 +22,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('project/', include("projects.urls")),
     path('', include('pages.urls')),
-    path('user/', include('users.urls'))
+    path('user/', include('users.urls')),
+    path('translations/', include('translations.urls.urls_no_project'))
 ]
 
 if settings.DEBUG:

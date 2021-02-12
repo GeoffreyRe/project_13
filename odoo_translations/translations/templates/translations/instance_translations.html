@@ -10,17 +10,17 @@
     {% endif %}
     </h4>
     {% for block in translation_lines %}
-        <div class="col-lg-8 col-12" style="padding:0.4rem 3rem; max-height:20rem; height:20rem; overflow-y:scroll; margin-bottom:0.5rem; margin-left:auto; margin-right:auto; border:solid 1px black;">
+        <div data-block-id="{{block.id}}" class="col-lg-8 col-12" style="padding:0.4rem 3rem; max-height:20rem; height:20rem; overflow-y:scroll; margin-bottom:0.5rem; margin-left:auto; margin-right:auto; border:solid 1px black;">
             <div class="line-infos">
-            {%for line in block %}
+            {%for line in block.lines %}
                 {% if forloop.first %}
-                    <div data-caroussel-pos="1">
+                    <div data-line-id="{{line.id}}" data-caroussel-pos="1">
                 {% else %}
-                    <div style="display:none;" data-caroussel-pos="{{forloop.counter}}">
+                    <div data-line-id="{{line.id}}" style="display:none;" data-caroussel-pos="{{forloop.counter}}">
                 {% endif %}
                 <div style="float:right; margin-right:-35px;">
                     <span><i class="prev-caroussel-btn fas fa-arrow-circle-left" style="margin-right:2px;"></i><i class="nxt-caroussel-btn fas fa-arrow-circle-right"></i></span><br>
-                    {{ forloop.counter }}/{{ block|length}}
+                    {{ forloop.counter }}/{{ block.lines|length}}
                 </div>
                 <p><strong>Instance</strong>: <em>{{line.instance.name|truncatechars:28}}</em></p>
                 {% if line.instance.parent %}
@@ -33,9 +33,10 @@
             </div>
             <hr />
             <p><strong>Texte original </strong>:</p>
-            <textarea disabled>{{block.0.block.original_text}}</textarea>
+            <textarea disabled>{{block.lines.0.block.original_text}}</textarea>
             <p><strong>Texte traduit </strong>:</p>
-            <textarea disabled>{{block.0.block.translated_text}}</textarea>
+            <textarea id="translated_block_{{block.id}}">{{block.lines.0.block.translated_text}}</textarea>
+            <button class="reset-translation d-block" data-block-id="{{block.id}}">Réinitialiser</button>
         </div>
     {% endfor %}
 </div>
@@ -67,4 +68,5 @@
         })
     })
 </script>
+<script src="{% static 'translations/js/translations.js' %}"></script>
 {% endblock %}
