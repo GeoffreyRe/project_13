@@ -18,12 +18,14 @@ from django.urls import path, include
 from django.views.static import serve
 from django.conf import settings
 from django.conf.urls import url
+from translations import urls as translations_urls
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('project/', include("projects.urls")),
     path('', include('pages.urls')),
     path('user/', include('users.urls')),
-    path('translations/', include('translations.urls.urls_no_project'))
+    path('translations/', include(translations_urls.urlpatterns_without_project))
 ]
 
 if settings.DEBUG:
