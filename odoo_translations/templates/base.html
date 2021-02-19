@@ -35,20 +35,20 @@
                 <ul class="navbar-nav ml-auto">
                 {% if user.is_authenticated %}
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url 'invitations_list'%}" title="Mes invitations de projet"><i class="fas fa-tasks fa-2x"></i></a>
+                    <a class="nav-link d-flex justify-content-start align-items-center" href="{% url 'invitations_list'%}" title="Mes invitations de projet"><i class="fas fa-tasks fa-2x"></i><span class="d-lg-none pl-2">Mes invitations</span></a>
+                </li>
+                <li class="nav-item d-flex justify-content-start align-items-center">
+                    <a class="nav-link" href="{% url 'projects_list'%}" title="Mes projets"><i class="fas fa-project-diagram fa-2x"></i><span class="d-lg-none pl-2">Mes projets</span></a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url 'projects_list'%}" title="Mes projets"><i class="fas fa-project-diagram fa-2x"></i></a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'logout'%}" title="Se déconnecter"><i class="fas fa-sign-out-alt fa-2x"></i></a>
+                    <a class="nav-link d-flex justify-content-start align-items-center" href="{% url 'logout'%}" title="Se déconnecter"><i class="fas fa-sign-out-alt fa-2x"></i><span class="d-lg-none pl-2">Me déconnecter</span></a>
                 </li>
                 {% else %}
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url 'signup'%}" title="Se créer un compte"><i class="fas fa-user-plus fa-2x"></i></a>
+                    <a class="nav-link d-flex justify-content-start align-items-center" href="{% url 'signup'%}" title="Se créer un compte"><i class="fas fa-user-plus fa-2x"></i><span class="d-lg-none pl-2">Me créer un compte</span></a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url 'login'%}" title="Se connecter"><i class="fas fa-sign-in-alt fa-2x"></i></a>
+                    <a class="nav-link d-flex justify-content-start align-items-center" href="{% url 'login'%}" title="Se connecter"><i class="fas fa-sign-in-alt fa-2x"></i><span class="d-lg-none pl-2">Me connecter</span></a>
                 </li>
                 {%endif%}
 
