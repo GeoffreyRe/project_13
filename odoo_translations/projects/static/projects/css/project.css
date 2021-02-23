@@ -124,7 +124,7 @@ ul ul
     width:fit-content;
 }
 
-.block-files-project
+.block-files-project .block-files-config-project
 {
     width:fit-content;
 }
@@ -138,7 +138,7 @@ ul ul
     overflow-x: hidden;
 }
 
-.btn-delete-file
+.btn-delete-file, .btn-delete-config-file
 {
     position:absolute;
     right:5px;
@@ -147,7 +147,7 @@ ul ul
     cursor:pointer;
 }
 
-.btn-delete-file:hover
+.btn-delete-file:hover, .btn-delete-config-file:hover
 {
     color:red;
 }

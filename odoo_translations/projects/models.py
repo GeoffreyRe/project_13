@@ -96,29 +96,46 @@ class Project(models.Model):
             self.modify_roles_of_user_on_project(project_values['users'], user)
             self.delete_users_on_project(project_values['users_to_delete'])
             self.add_files_to_project(values['files'])
+            if values.get('config_file', None):
+                self.add_files_to_project([values['config_file']], config_file=True)
             self.delete_files_of_project(values['files_to_delete'])
+            self.delete_files_of_project(values['config_files_to_delete'], config_files=True)
     
     def delete_users_on_project(self, user_ids):
         self.userproject_set.filter(pk__in=user_ids).delete()
 
-    def add_files_to_project(self, files):
+    def add_files_to_project(self, files, config_file=False):
         for file in files:
-            TranslationFileModel = apps.get_model('translations', 'TranslationFile')
-            new_file = TranslationFileModel(
-                project=self,
-                translated_language=file['lang'],
-                is_template=file['template'],
-                original_file=file['file']
-            )
-            new_file.save()
+            if config_file is True:
+                new_file = apps.get_model('translations', 'ConfigFile')(
+                    project=self,
+                    type="model",
+                    file=file
+                )
+                new_file.save()
+            else:
+                TranslationFileModel = apps.get_model('translations', 'TranslationFile')
+                new_file = TranslationFileModel(
+                    project=self,
+                    translated_language=file['lang'],
+                    is_template=file['template'],
+                    original_file=file['file']
+                )
+                new_file.save()
     
-    def delete_files_of_project(self, files_ids):
+    def delete_files_of_project(self, files_ids, config_files=False):
         for file_id in files_ids:
-            TranslationFileModel = apps.get_model('translations', 'TranslationFile')
-            try:
-                file_to_delete = TranslationFileModel.objects.get(id=int(file_id))
-            except DoesNotExist:
-                pass
+            if config_files is True:
+                try:
+                    file_to_delete = apps.get_model('translations', 'ConfigFile').objects.get(id=int(file_id))
+                except DoesNotExist:
+                    pass
+            else:
+                TranslationFileModel = apps.get_model('translations', 'TranslationFile')
+                try:
+                    file_to_delete = TranslationFileModel.objects.get(id=int(file_id))
+                except DoesNotExist:
+                    pass
             
             
             file_to_delete.delete()

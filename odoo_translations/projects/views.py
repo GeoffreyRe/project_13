@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse
+from django.apps import apps
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.forms import modelformset_factory
@@ -109,6 +110,7 @@ def detail_project(request, project_id):
         'users_on_project' : users_on_project,
         'project': project,
         'files': translation_files,
+        'config_files': project.config_files.all(),
         'has_write_rights': has_write_rights,
         'modifications': False}
 
@@ -139,6 +141,7 @@ def detail_project_modifications(request, project_id):
         'users_on_project' : user_project_formset,
         'project': project,
         'files': translation_files,
+        'config_files': project.config_files.all(),
         'project_f' : project_form,
         'modifications':True,
         'role_form': RoleForm,

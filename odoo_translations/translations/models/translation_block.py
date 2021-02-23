@@ -2,6 +2,7 @@ from django.db import models
 from django.apps import apps
 from translations.exceptions import NoTranslationFoundInFileError, NoOdooTranslationFileHeader, TranslationBlockStructureNotGoodError
 from translations.managers import CustomTranslationBlockManager
+import re
 
 
 class TranslationBlock(models.Model):
@@ -76,7 +77,7 @@ class TranslationBlock(models.Model):
 
 
     @staticmethod
-    def check_errors_content(data, line, is_header=False):
+    def check_errors_content(data, line_pos, is_header=False):
         """
         data ==> text content of block, given as a list of lines
         is_header ==> if True, it a header block, checking is different
@@ -85,6 +86,7 @@ class TranslationBlock(models.Model):
         if yes: --> return error message
         if no: --> return False 
         """
+        begin_line = line_pos
         if is_header:
             if data[0] != "# Translation of Odoo Server.":
                 return (True, "Erreur lors de l'analyse du fichier : ligne {} --- le premier bloc n'est pas le header".format(line))
@@ -104,8 +106,9 @@ class TranslationBlock(models.Model):
         supported_lines = []
         module_spec_line = data[0]
         if not module_spec_line.startswith("#. module:"):
+            line_pos += 1
             return (True,
-            "ligne : {} --> ligne de specification du module attendue mais non trouvée".format(line))
+            "ligne : {} --> ligne de specification du module attendue mais non trouvée".format(line_pos))
         # we extract module name from module specification line
         supported_lines.append(module_spec_line.strip())
         
@@ -114,10 +117,14 @@ class TranslationBlock(models.Model):
         msgstr_text = None
 
         for pos, line in enumerate(data[1:]):
+            line_pos += 1
             # now we will try to see if we could find msgid and msgstr, else we raise error
             if line.startswith('msgid "'):
                 msgid_text = []
-                msgid_text.append(line[6:].strip())
+                line_to_append = line[6:].strip()
+                if re.fullmatch('^".*"$', line_to_append):
+                    line_to_append = line_to_append[1:-1]
+                msgid_text.append(line_to_append)
                 i = 1
                 if (pos + i) < len(data[1:]):
                     next_line = data[1:][pos + i]
@@ -125,7 +132,11 @@ class TranslationBlock(models.Model):
                     next_line = ""
 
                 while next_line.startswith('"'):
-                    msgid_text.append(next_line.strip())
+                    line_to_append = next_line.strip()
+                    if re.fullmatch('^".*"$', line_to_append):
+                        line_to_append = line_to_append[1:-1]
+                    
+                    msgid_text.append(line_to_append)
                     i += 1
                     if (pos + i) < len(data[1:]):
                         next_line = data[1:][pos + i]
@@ -136,10 +147,13 @@ class TranslationBlock(models.Model):
                 if msgid_text is None:
                     # if we found a msgstr before msgid, this is not a good structure
                     return (True,
-                    "Erreur : msgstr trouvé avant msgid")
+                    "Erreur ligne {}: msgstr trouvé avant msgid".format(line_pos))
 
                 msgstr_text = []
-                msgstr_text.append(line[6:].strip())
+                line_to_append = line[6:].strip()
+                if re.fullmatch('^".*"$', line_to_append):
+                    line_to_append = line_to_append[1:-1]
+                msgstr_text.append(line_to_append)
                 i = 1
                 if (pos + i) < len(data[1:]):
                     next_line = data[1:][pos + i]
@@ -147,7 +161,10 @@ class TranslationBlock(models.Model):
                     next_line = ""
 
                 while next_line.startswith('"'):
-                    msgstr_text.append(next_line.strip())
+                    line_to_append = next_line.strip()
+                    if re.fullmatch('^".*"$', line_to_append):
+                        line_to_append = line_to_append[1:-1]
+                    msgstr_text.append(line_to_append)
                     i += 1
                     if (pos + i) < len(data[1:]):
                         next_line = data[1:][pos + i]
@@ -164,13 +181,13 @@ class TranslationBlock(models.Model):
                 pass
 
             else:
-                return ('true', 'Erreur : ligne "{}" non reconnue'.format(line.strip()))
+                return ('true', 'Erreur : ligne {} non reconnue'.format(line_pos))
         
         if (not msgid_text) or (not msgstr_text):
             # if we found partially (or not at all) informations about msgid and msgstr
             # we raise error
             return (True,
-            "Erreur : msgstr et/ou msgid non trouvé dans le bloc")
+            "Erreur ligne {} : msgstr et/ou msgid non trouvé dans le bloc".format(begin_line))
 
         # now we will find informations about lines (line type, instance to translate, etc...)
         TranslationBlock = apps.get_model('translations', 'TranslationBlock')

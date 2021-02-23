@@ -25,6 +25,9 @@ def organise_datas(datas, files):
         new_files.append(file_infos)
     organised_datas['files'] = new_files
     organised_datas['files_to_delete'] = json.loads(datas['files_to_delete'])
+    organised_datas['config_files_to_delete'] = json.loads(datas['config_files_to_delete'])
+    if files.get('config_file', False):
+        organised_datas['config_file'] = files['config_file']
 
     return organised_datas
 

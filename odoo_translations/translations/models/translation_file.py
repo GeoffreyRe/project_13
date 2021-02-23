@@ -4,7 +4,7 @@ from django.db.models.signals import post_delete
 from django.db import models
 from django.apps import apps
 from django.dispatch import receiver
-from translations.exceptions import NoTranslationFoundInFileError, NoOdooTranslationFileHeader, TranslationBlockStructureNotGoodError
+from translations.exceptions import FileParsingError
 
 
 logger = logging.getLogger(__name__)
@@ -70,28 +70,27 @@ class TranslationFile(models.Model):
             if content[-1].strip() != "":
                 blocks.append(content[last_block:])
 
-            #import pdb;pdb.set_trace()
-
             if len(blocks) < 2:
-                raise NoTranslationFoundInFileError("Aucun block de traduction n'a été trouvé dans le fichier {}".format(self.name))
+                raise FileParsingError("Aucun block de traduction n'a été trouvé dans le fichier {}".format(self.name))
             
             TranslationBlock = apps.get_model('translations', 'TranslationBlock')
             # check of first block wich must be header :
             header_content = blocks[0]
             errors = TranslationBlock.check_errors_content(header_content, 1, is_header=True)
             if errors[0] is True:
-                raise NoOdooTranslationFileHeader(errors[1])
+                raise FileParsingError(errors[1])
             
             # we save the header
             
             TranslationBlock.objects.create_block_from_data(header_content, file=self,is_header=True)
 
             # we will analyze each block found
-            line_position = len(blocks[0]) + 1# line position will be displayed if errors occur.
-            for block in blocks[1:]:
+            line_position = len(blocks[0]) + 2
+            for index, block in enumerate(blocks[1:]):
+                line_position += len(blocks[1:][index]) + 2
                 errors = TranslationBlock.check_errors_content(block, line_position)
                 if errors[0] is True:
-                    raise TranslationBlockStructureNotGoodError(errors[1])
+                    raise FileParsingError(errors[1])
                 # if there is no errors, we will create the block
                 TranslationBlock.objects.create_block_from_data(errors[1], file=self)
 

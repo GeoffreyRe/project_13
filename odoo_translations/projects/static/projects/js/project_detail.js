@@ -93,7 +93,7 @@ $(document).ready(function(){
         }
 
         // check of templates
-        let files = $('.file_infos')
+        let files = $('.block-files-project .file_infos')
         
         for (let i=0; i < files.length; i++){
             let file = files[i]
@@ -116,6 +116,21 @@ $(document).ready(function(){
                     })
                     throw errorMsg
 
+                }
+            }
+        }
+
+        let configFiles = $('.block-files-config-project .file_infos:not(#form-config-file)')
+        errorMsg = "Il n'y a aucun fichier de traduction"
+        for (let i=0; i < configFiles.length; i++){
+            let configFile = configFiles[i]
+            if (configFile.dataset.fileId == 'new'){
+                let inputFile = $(configFile).find('input[type=file]')
+                if ($(inputFile).prop('files').length == 0){
+                    $(inputFile).css('color', 'rgb(255,33,25)')
+                    displayErrorPopup(errorMsg)
+
+                    throw errorMsg
                 }
             }
         }
@@ -237,6 +252,22 @@ $(document).ready(function(){
 
     })
 
+    $(".btn-append-config-file").click(function(){
+        if ($(".block-files-config-project .file_infos:not(#form-config-file)").length < 1){
+            let newConfig = $('#form-config-file').clone()[0]
+            $(newConfig).removeClass('d-none')
+            newConfig.id = null
+            $('.block-files-config-project').append(newConfig)
+            $('.btn-delete-config-file').click(function(){
+                if (this.dataset.fileId !== 'new'){
+                    configFilesToDelete.push(this.dataset.fileId)
+                }
+                $(this).closest('.file_infos').remove()
+                console.log(configFilesToDelete)
+            })
+        }
+    })
+
     let filesToDelete = []
     $('.btn-delete-file').click(function(){
         if (this.dataset.fileId !== 'new'){
@@ -244,6 +275,15 @@ $(document).ready(function(){
         }
         $(this).closest('.file_infos').remove()
         console.log(filesToDelete)
+    })
+
+    let configFilesToDelete = []
+    $('.btn-delete-config-file').click(function(){
+        if (this.dataset.fileId !== 'new'){
+            configFilesToDelete.push(this.dataset.fileId)
+        }
+        $(this).closest('.file_infos').remove()
+        console.log(configFilesToDelete)
     })
 
 
@@ -299,7 +339,7 @@ $(document).ready(function(){
 
         // now we will check if there is new files to add 
 
-        let newFiles = $(".file_infos[data-file-id='new']")
+        let newFiles = $(".block-files-project .file_infos[data-file-id='new']")
         let formDataFiles = new FormData()
         let totalFiles = 0
         for (let k=0;k < newFiles.length; k++) {
@@ -316,6 +356,18 @@ $(document).ready(function(){
 
 
         }
+
+        // now, we check for config files
+        let newConfigFiles = $('.block-files-config-project .file_infos[data-file-id="new"]:not(#form-config-file)')
+
+        for (let k=0;k < newConfigFiles.length; k++) {
+            let newConfigFile = newConfigFiles[k]
+            let configData = $(newConfigFile).find("input[type='file']").prop('files')[0]
+            formDataFiles.append('config_file', configData)
+            console.log('test')
+        }
+
+        formDataFiles.append('config_files_to_delete', JSON.stringify(configFilesToDelete))
         formDataFiles.append('files_to_delete', JSON.stringify(filesToDelete))
         formDataFiles.append('files_total', totalFiles)
         // now we will add relations between user and project to delete if there is any
@@ -326,6 +378,7 @@ $(document).ready(function(){
         console.log(infosToSend)
 
         // we will send infosToSend to an url with post values
+        console.log(formDataFiles.get('config_files_to_delete'))
         $.ajax({
             url: '/project/'+ infosToSend['project']['id'] + '/modify_project',
 

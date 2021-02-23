@@ -86,7 +86,8 @@
         </div>
         <div class="btn-append d-flex justify-content-center"><i class="fas fa-plus-circle fa-2x" style="color:green;"></i></div>
         </div>
-        
+    <div id="block-files" class="d-flex flex-column flex-md-row justify-content-md-between justify-content-lg-around">
+    <div id="translation-files">   
     <h2 class="h4 text-left pt-2">Fichiers de traductions</h2>
         <div class="block-files">
         <div class="block-files-project">
@@ -111,6 +112,34 @@
         </div>
         <div class="btn-append-file d-flex justify-content-center"><i class="fas fa-plus-circle fa-2x" style="color:green;"></i></div>
         </div>
+    </div>
+    <div id="config-file">
+    <h2 class="h4 pt-2">Fichiers de configuration</h2>
+    <div class="block-files">
+        <div class="block-files-config-project">
+            {% if not config_files %}
+                <p>Il n'y a aucun fichier de configuration pour le moment</p>
+            {% endif %}
+                {% for file in config_files %}
+                <div class="file_infos justify-content-between border rounded my-2">
+                    <i class="fas fa-trash-alt btn-delete-config-file" data-file-id={{file.id}}></i>
+                    <p><a href="/media/{{file.file}}" download>{{file.name}}</a></p>
+                    <p>Type: {{file.type}}</p>        
+                </div>
+                {% endfor %}
+                <div id="form-config-file" class="d-none file_infos justify-content-between border rounded my-2" data-file-id="new">
+                    <i class="fas fa-trash-alt btn-delete-config-file" data-file-id="new"></i>
+                    <input class="mb-2" type="file" required />
+                    <p>Type: <select>
+                        <option value="model">Modèles</option>
+                    </select>
+                    </p>        
+                </div>
+        </div>
+        <div class="btn-append-config-file d-flex justify-content-center"><i class="fas fa-plus-circle fa-2x" style="color:green;"></i></div>
+        </div>
+    </div>
+    </div>
         
     {% endif %}
     </div>
