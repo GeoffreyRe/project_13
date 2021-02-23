@@ -30,22 +30,46 @@
                 </div>
             {% endfor %}
         </div>
-    <h2 class="h4 text-left pt-2">Fichiers de traductions</h2>
-        <div class="block-files-project">
-            {% if not files %}
-            <p>Il n'y a aucun fichier de traduction</p>
-            {% else %}
+    <div class="d-flex flex-column flex-md-row justify-content-md-between justify-content-lg-around">
+    <div id="translation-files">
+        <h2 class="h4 text-left pt-2">Fichiers de traductions</h2>
             <div class="block-files-project">
-                {% for file in files %}
-                <div class="file_infos justify-content-between border rounded my-2">
-                    <p><a href="/media/{{file.original_file}}">{{file.name}}</a></p>
-                    <p><span class="font-weight-bold">Langue du fichier</span> : {{file.get_translated_language_display}}</p>
-                    <p><span class="font-weight-bold">Fichier de template</span> : {% if file.is_template %} <input type="checkbox" checked disabled />{% else %}<input type="checkbox" disabled />{% endif %}</p>             
+                {% if not files %}
+                <p>Il n'y a aucun fichier de traduction</p>
+                {% else %}
+                <div class="block-files-project">
+                    {% for file in files %}
+                    <div class="file_infos justify-content-between border rounded my-2">
+                        <p><a href="/media/{{file.original_file}}">{{file.name}}</a></p>
+                        <p><span class="font-weight-bold">Langue du fichier</span> : {{file.get_translated_language_display}}</p>
+                        <p><span class="font-weight-bold">Fichier de template</span> : {% if file.is_template %} <input type="checkbox" checked disabled />{% else %}<input type="checkbox" disabled />{% endif %}</p>             
+                    </div>
+                    {% endfor %}
                 </div>
-                {% endfor %}
+                {% endif %}
             </div>
-            {% endif %}
-        </div>
+    </div>
+
+    <div id="config-files">
+        <h2 class="h4 text-left pt-2">Fichiers de configuration</h2>
+            <div class="block-files-project">
+                {% if not config_files %}
+                <p>Il n'y a aucun fichier de configuration</p>
+                {% else %}
+                <div class="block-files-project">
+                    {% for file in config_files %}
+                    <div class="file_infos justify-content-between border rounded my-2">
+                        <p><a href="/media/{{file.file}}">{{file.name}}</a></p>
+                        <p><span class="font-weight-bold">Type</span> : {{file.get_type_display}}</p>           
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+    </div>
+    </div>
+
+        
     {% else %}
     <!--In the case of user clicks on the modify button-->
     <h1 class="h4 pt-2 col-11 text-center">Informations générales</h1>
