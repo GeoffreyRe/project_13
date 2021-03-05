@@ -175,4 +175,7 @@ def check_if_users_can_be_added_to_project(request):
                 return JsonResponse({'success' : False}, safe=False, status=200)
         
         return JsonResponse({'success' : True}, safe=False, status=200)
+
+def launch_analysis(request, project_id):
+    return JsonResponse({'success' : True}, safe=False, status=200)
             

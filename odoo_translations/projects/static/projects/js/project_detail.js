@@ -422,6 +422,26 @@ $(document).ready(function(){
         $('#sub-menu-translations').removeClass('sub-menu-full-display')
         }, time
     )})
+
+    $('#launch_analysis').click(function(){
+        console.log(window.location.href.replace('/details', ''))
+        $.ajax({
+            url: window.location.href.replace('/details', '') + '/launch_analysis',
+
+            type: 'get',
+            
+            success: function(results, status){
+                if (results.success ==true){
+                    console.log('success')
+                }
+            },
+
+            error: function(results, status, error){
+                console.log('erreur requête AJAX')
+            }
+        })
+
+    })
     
 
 }) //fin fonction ready
