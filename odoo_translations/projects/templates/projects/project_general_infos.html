@@ -8,6 +8,7 @@
     {% if has_write_rights %}
     <div class="text-left pb-2">
         <button class="btn btn-info rounded"><a href="{% url 'detail_project_modifications' project_id=project.id %}" class="disabled-link-style">Modifier</a></button>
+        <button class="btn btn-info rounded"><a id="launch_analysis" class="disabled-link-style">Analyser fichiers</a></button>
     </div>
     {% endif %}
     <h2 class="h4 text-left pt-2">Détails</h2>
@@ -67,9 +68,6 @@
                 {% endif %}
             </div>
     </div>
-    </div>
-    <div class="text-left pb-2">
-        <button class="btn btn-info rounded"><a id="launch_analysis" class="disabled-link-style">Analyser fichiers</a></button>
     </div>
 
         

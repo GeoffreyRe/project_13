@@ -6,7 +6,7 @@ from django.apps import apps
 from users.models import User
 from .managers import CustomProjectManager
 from projects.utils import regroup_lines_by_block
-from translations.exceptions import NoFileForProjectError
+from translations.exceptions import NoFileForProjectError, FileParsingError
 
 # Create your models here.
 class NameValues(models.TextChoices):
@@ -160,14 +160,17 @@ class Project(models.Model):
         """
         This method will launch analysis of every translation files of a project
         """
-        if len(self.translation_files) == 0:
+        if len(self.translation_files.all()) == 0:
             # check if there is at least one translation file to analyse.
             # TODO: check if there is not only a .pot file. We need at least a .po file
             raise NoFileForProjectError("Il n'y a pas de fichier de traduction à analyser pour ce projet")
         
+        for config_file in self.config_files.all():
+                    config_file.analyze()
+        
         try:
             with transaction.atomic():
-                for translation_file in self.translation_files:
+                for translation_file in self.translation_files.all():
                     translation_file.analyze_content()
             
         except FileParsingError as e:

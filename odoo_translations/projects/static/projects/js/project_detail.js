@@ -433,6 +433,7 @@ $(document).ready(function(){
             success: function(results, status){
                 if (results.success ==true){
                     console.log('success')
+                    window.location.reload();
                 }
             },
 

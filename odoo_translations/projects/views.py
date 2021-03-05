@@ -177,5 +177,15 @@ def check_if_users_can_be_added_to_project(request):
         return JsonResponse({'success' : True}, safe=False, status=200)
 
 def launch_analysis(request, project_id):
-    return JsonResponse({'success' : True}, safe=False, status=200)
+    success = True
+    try:
+        project = Project.objects.get(id=project_id)
+    except ObjectDoesNotExist:
+        success = False
+    
+    if success:
+        project.delete_translations()
+        project.analyze_translation_files()
+        
+    return JsonResponse({'success' : success}, safe=False, status=200)
             
