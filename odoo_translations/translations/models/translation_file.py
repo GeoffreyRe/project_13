@@ -61,38 +61,38 @@ class TranslationFile(models.Model):
                 # otherwise, the last block won't be taken into account
                 content[i] = content_line.strip()
                 if content[i] == "":
-                    blocks.append(content[last_block:i])
+                    blocks.append({'block' : content[last_block:i], 'position': last_block + 1})
                     last_block = i + 1
             # now we will check if there is the header and if there is min 2 blocks (header + a traduction block)
 
             # warning : with this method : there must have a space at the end of file.
             # otherwise, the last block won't be taken into account, so we could do this way
             if content[-1].strip() != "":
-                blocks.append(content[last_block:])
+                blocks.append({'block' : content[last_block:], 'position': last_block + 1})
 
             if len(blocks) < 2:
                 raise FileParsingError("Aucun block de traduction n'a été trouvé dans le fichier {}".format(self.name))
             
             TranslationBlock = apps.get_model('translations', 'TranslationBlock')
             # check of first block wich must be header :
-            header_content = blocks[0]
-            errors = TranslationBlock.check_errors_content(header_content, 1, is_header=True)
+            header_content = blocks[0]['block']
+            errors = TranslationBlock.check_errors_content(header_content, 1, file_name=self.name,is_header=True)
             if errors[0] is True:
                 raise FileParsingError(errors[1])
             
             # we save the header
             
             TranslationBlock.objects.create_block_from_data(header_content, file=self,is_header=True)
-
+            
             # we will analyze each block found
-            line_position = len(blocks[0]) + 2
-            for index, block in enumerate(blocks[1:]):
-                line_position += len(blocks[1:][index]) + 2
-                errors = TranslationBlock.check_errors_content(block, line_position)
-                if errors[0] is True:
-                    raise FileParsingError(errors[1])
-                # if there is no errors, we will create the block
-                TranslationBlock.objects.create_block_from_data(errors[1], file=self)
+            for index, block_infos in enumerate(blocks[1:]):
+                block = block_infos['block']
+                if block:
+                    errors = TranslationBlock.check_errors_content(block, block_infos['position'], file_name=self.name)
+                    if errors[0] is True:
+                        raise FileParsingError(errors[1])
+                    # if there is no errors, we will create the block
+                    TranslationBlock.objects.create_block_from_data(errors[1], block_position=block_infos['position'],file=self)
 
             
             

@@ -2,13 +2,56 @@
 {% load static %}
 {% block right_content_project %}
 <div id="project_detail_content" class="page-content pb-5" data-project-id="{{project.id}}">
+<!-- Modal -->
+<!-- Button trigger modal -->
+
+  <!-- Modal Bootstrap confirmation -->
+  <div class="modal fade" id="ModalConfirmation" tabindex="-1" role="dialog" aria-labelledby="ModalConfirmation" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="ModalConfirmationLabel">Confirmation</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p>Êtes-vous sûr de vouloir analyser les fichiers de traductions ?</p>
+          <p>Toutes les traductions précédentes seront supprimées.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-info rounded" data-dismiss="modal">Fermer</button>
+          <button id="launch_analysis" type="button" class="btn btn-info rounded">Analyser</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+    <!-- Modal Bootstrap error -->
+    <div class="modal fade" id="ModalError" tabindex="-1" role="dialog" aria-labelledby="ModalError" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="ModalErrorLabel">Erreur</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <p>Il semblerait qu'une erreur se soit produite durant l'analyse des fichiers</p>
+              <p>Voici le message d'erreur : <p id="error_message_analysis"></p></p>
+            </div>
+          </div>
+        </div>
+      </div>
+
 <div class="w-90 m-auto">
     {% if not modifications %}
     <h1 class="h4 pt-2 col-11 text-center">Informations générales</h1>
     {% if has_write_rights %}
     <div class="text-left pb-2">
         <button class="btn btn-info rounded"><a href="{% url 'detail_project_modifications' project_id=project.id %}" class="disabled-link-style">Modifier</a></button>
-        <button class="btn btn-info rounded"><a id="launch_analysis" class="disabled-link-style">Analyser fichiers</a></button>
+        <button class="btn btn-info rounded" data-toggle="modal" data-target="#ModalConfirmation"><a id="open_popup_confirmation" class="disabled-link-style">Analyser fichiers</a></button>
     </div>
     {% endif %}
     <h2 class="h4 text-left pt-2">Détails</h2>

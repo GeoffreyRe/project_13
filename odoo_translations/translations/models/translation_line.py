@@ -1,7 +1,8 @@
 from django.db import models
 from django.apps import apps
 from translations.exceptions import NoTranslationFoundInFileError, NoOdooTranslationFileHeader, TranslationBlockStructureNotGoodError
-
+from translations.exceptions import FileParsingError
+from django.core.exceptions import ObjectDoesNotExist
 
 class TranslationLine(models.Model):
     block = models.ForeignKey('translations.TranslationBlock',
@@ -41,7 +42,8 @@ class TranslationLine(models.Model):
         self.instance = instance
         self.line_type = instance_line_type
 
-    def analyze_infos(self, data):
+    def analyze_infos(self, data, block_position):
+        file_name = self.block.file.name or ''
         InstanceType = apps.get_model('translations', 'InstanceType')
         Instance = apps.get_model('translations', 'Instance')
         LineType = apps.get_model('translations', 'LineType')
@@ -52,18 +54,27 @@ class TranslationLine(models.Model):
             instance_type = InstanceType.objects.filter(
                 name=instance_type_name)
             if len(instance_type) != 1:
-                raise ValueError
+                raise FileParsingError(
+            'fichier {}, bloc ligne {} : {} --- problème avec le type d\'instance'.format((file_name, block_position, data.get('line', ''))))
             # then if instance type exists, we will check if an instance
             # of this type already exists, else we create it
             instance_name = data['instance']['name']
             line_type_value =  data['line_type']
-            instance_line_type = LineType.objects.get(name=line_type_value)
+            
+            try:
+                instance_line_type = LineType.objects.get(name=line_type_value)
+            except ObjectDoesNotExist:
+                error_string = 'Fichier: {}, bloc ligne {} : "{}" '.format(file_name, block_position, data.get('line', ''))
+                error_string += '\n"{}" non reconnu'.format(line_type_value)
+                raise FileParsingError(error_string)
             
             instance_name_parts = instance_name.split('.') if instance_type_name != "code" else instance_name.split(':')
             if len(instance_name_parts) != 2 and instance_type_name != 'module':
                 # we have to get module name and instance name
                 # but for a module line, it doesn't matter
-                raise ValueError
+                error_string = 'Fichier: {}, bloc ligne {} : "{}" '.format(file_name, block_position, data.get('line', ''))
+                error_string += '\nNom du module et/ou de l\'instance manquant(e)'
+                raise FileParsingError(error_string)
 
             module_instance_type = InstanceType.objects.get(name='module')
             model_instance_type = InstanceType.objects.get(name='ir.model')
@@ -76,7 +87,9 @@ class TranslationLine(models.Model):
             
             if instance_type_name == 'ir.model.fields':
                 if not instance_name_parts[1].startswith('field_'):
-                    raise ValueError
+                    error_string = 'Fichier: {}, bloc ligne {} : "{}" '.format(file_name, block_position, data.get('line', ''))
+                    error_string += '\n"{}" ne commençant pas par "field_"'.format(instance_name_parts[1])
+                    raise FileParsingError(error_string)
                 model_field_name = instance_name_parts[1][6:]
                 # now we have to find the model inside the field
                 found = False
@@ -97,7 +110,9 @@ class TranslationLine(models.Model):
                 
                 if found == False:
                     print(model_field_name)
-                    raise ValueError
+                    error_string = 'Fichier: {}, bloc ligne {} : "{}" '.format(file_name, block_position, data.get('line', ''))
+                    error_string += '\n modèle "{}" introuvable'.format(model_field_name)
+                    raise FileParsingError(error_string)
 
                 field_name = model_field_name.replace("_".join(model_field_parts), "", 1)
                 if field_name.startswith("_"):
@@ -120,7 +135,9 @@ class TranslationLine(models.Model):
             
             elif instance_type_name == "ir.model":
                 if not instance_name_parts[1].startswith('model_'):
-                    raise ValueError
+                    error_string = 'Fichier: {}, bloc ligne {} : "{}" '.format(file_name, block_position, data.get('line', ''))
+                    error_string += '\n"{}" ne commençant pas par "model_"'.format(instance_name_parts[1])
+                    raise FileParsingError(error_string)
 
                 self.find_or_create_instance(instance_name_parts[1][6:], model_instance_type, instance_line_type)
             

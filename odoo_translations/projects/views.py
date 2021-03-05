@@ -4,6 +4,7 @@ from django.apps import apps
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.forms import modelformset_factory
+from django.db import transaction
 import json
 from users.models import User
 from translations.forms import TranslationFileForm
@@ -12,6 +13,7 @@ from .utils import nest_list, organise_datas
 from .forms import ProjectCreationForm, RoleForm
 from .models import Project, Invitation, UserProject
 from .decorators import user_is_assigned_to_project
+from translations.exceptions import FileParsingError
 
 # Create your views here.
 
@@ -178,14 +180,20 @@ def check_if_users_can_be_added_to_project(request):
 
 def launch_analysis(request, project_id):
     success = True
+    error_message = ""
     try:
         project = Project.objects.get(id=project_id)
     except ObjectDoesNotExist:
         success = False
     
     if success:
-        project.delete_translations()
-        project.analyze_translation_files()
+        try:
+            with transaction.atomic():
+                project.delete_translations()
+                project.analyze_translation_files()
+        except FileParsingError as e:
+            success = False
+            error_message = str(e)
         
-    return JsonResponse({'success' : success}, safe=False, status=200)
+    return JsonResponse({'success' : success, 'error_message': error_message}, safe=False, status=200)
             

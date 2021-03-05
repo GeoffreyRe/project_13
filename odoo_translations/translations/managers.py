@@ -4,7 +4,7 @@ from django.apps import apps
 class CustomTranslationBlockManager(models.Manager):
 
     
-    def create_block_from_data(self, data, file, is_header=False):
+    def create_block_from_data(self, data, file, block_position=False,is_header=False):
         TranslationLine = apps.get_model('translations', 'TranslationLine')
         if is_header is True:
             # if it is a header
@@ -27,7 +27,7 @@ class CustomTranslationBlockManager(models.Manager):
 
             for translation_line in data['supported_lines']:
                 new_translation_line = TranslationLine(block=block)
-                new_translation_line.analyze_infos(translation_line)
+                new_translation_line.analyze_infos(translation_line, block_position)
 
     def update_translated_texts(self, values):
         """

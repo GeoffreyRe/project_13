@@ -424,7 +424,6 @@ $(document).ready(function(){
     )})
 
     $('#launch_analysis').click(function(){
-        console.log(window.location.href.replace('/details', ''))
         $.ajax({
             url: window.location.href.replace('/details', '') + '/launch_analysis',
 
@@ -434,6 +433,10 @@ $(document).ready(function(){
                 if (results.success ==true){
                     console.log('success')
                     window.location.reload();
+                }
+                else {
+                    $("#error_message_analysis").text(results.error_message)
+                    $('#ModalError').modal('show')
                 }
             },
 

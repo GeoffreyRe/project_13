@@ -163,19 +163,14 @@ class Project(models.Model):
         if len(self.translation_files.all()) == 0:
             # check if there is at least one translation file to analyse.
             # TODO: check if there is not only a .pot file. We need at least a .po file
-            raise NoFileForProjectError("Il n'y a pas de fichier de traduction à analyser pour ce projet")
-        
+            raise FileParsingError("Il n'y a pas de fichier de traduction à analyser pour ce projet")
+
         for config_file in self.config_files.all():
-                    config_file.analyze()
+            config_file.analyze()
         
-        try:
-            with transaction.atomic():
-                for translation_file in self.translation_files.all():
-                    translation_file.analyze_content()
-            
-        except FileParsingError as e:
-            return str(e)
-    
+        for translation_file in self.translation_files.all():
+            translation_file.analyze_content()
+
     def all_instances(self, type="ir.model"):
         InstanceType = apps.get_model('translations.InstanceType')
         Instance = apps.get_model('translations.Instance')

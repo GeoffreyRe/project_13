@@ -77,7 +77,7 @@ class TranslationBlock(models.Model):
 
 
     @staticmethod
-    def check_errors_content(data, line_pos, is_header=False):
+    def check_errors_content(data, line_pos, is_header=False, file_name=False):
         """
         data ==> text content of block, given as a list of lines
         is_header ==> if True, it a header block, checking is different
@@ -89,7 +89,7 @@ class TranslationBlock(models.Model):
         begin_line = line_pos
         if is_header:
             if data[0] != "# Translation of Odoo Server.":
-                return (True, "Erreur lors de l'analyse du fichier : ligne {} --- le premier bloc n'est pas le header".format(line))
+                return (True, "Erreur lors de l'analyse du fichier {}: ligne {} --- le premier bloc n'est pas le header".format(file_name, begin_line))
             else:
                 return (False,)
 
@@ -100,15 +100,14 @@ class TranslationBlock(models.Model):
                 # at least one for a instance to translate (translation line), and 2 for the sentence to translate
                 # msgstr and msgid
                 return (True,
-            "ligne {} : la structure du bloc n'est pas conforme -> taille du bloc inférieur à 4 lignes".format(line))
+            "fichier {}, ligne {} : la structure du bloc n'est pas conforme -> taille du bloc inférieur à 4 lignes".format(file_name, line_pos))
         
         # the first line of block should be the module specification line
         supported_lines = []
         module_spec_line = data[0]
         if not module_spec_line.startswith("#. module:"):
-            line_pos += 1
             return (True,
-            "ligne : {} --> ligne de specification du module attendue mais non trouvée".format(line_pos))
+            "fichier {}, ligne : {} --> ligne de specification du module attendue mais non trouvée".format(file_name, line_pos))
         # we extract module name from module specification line
         supported_lines.append(module_spec_line.strip())
         
@@ -117,8 +116,8 @@ class TranslationBlock(models.Model):
         msgstr_text = None
 
         for pos, line in enumerate(data[1:]):
-            line_pos += 1
             # now we will try to see if we could find msgid and msgstr, else we raise error
+            line_pos += 1
             if line.startswith('msgid "'):
                 msgid_text = []
                 line_to_append = line[6:].strip()
@@ -147,7 +146,7 @@ class TranslationBlock(models.Model):
                 if msgid_text is None:
                     # if we found a msgstr before msgid, this is not a good structure
                     return (True,
-                    "Erreur ligne {}: msgstr trouvé avant msgid".format(line_pos))
+                    "Erreur fichier {}, ligne {}: msgstr trouvé avant msgid".format(file_name, line_pos))
 
                 msgstr_text = []
                 line_to_append = line[6:].strip()
@@ -181,13 +180,14 @@ class TranslationBlock(models.Model):
                 pass
 
             else:
-                return ('true', 'Erreur : ligne {} non reconnue'.format(line_pos))
+                return (True, 'Erreur :Fichier {}, ligne {} non reconnue'.format(file_name, line_pos))
+            
         
         if (not msgid_text) or (not msgstr_text):
             # if we found partially (or not at all) informations about msgid and msgstr
             # we raise error
             return (True,
-            "Erreur ligne {} : msgstr et/ou msgid non trouvé dans le bloc".format(begin_line))
+            "Erreur fichier {}, bloc ligne {} : msgstr et/ou msgid non trouvé dans le bloc".format(file_name, begin_line))
 
         # now we will find informations about lines (line type, instance to translate, etc...)
         TranslationBlock = apps.get_model('translations', 'TranslationBlock')
