@@ -212,9 +212,9 @@ class Project(models.Model):
         
         if type is not False:
             instances = self.all_instances(type=type)
-            query = Q(instance__in=instances)
+            query = Q(instance__in=[instance['instance'] for instance in instances])
             if with_children:
-                children_instances = Instance.objects.filter(parent__in=instances)
+                children_instances = Instance.objects.filter(parent__in=[instance['instance'] for instance in instances])
                 query = query | Q(instance__in=children_instances)
 
             blocks_lang = {}
@@ -225,6 +225,17 @@ class Project(models.Model):
                 blocks_lang[lang] = blocks
             
             return (instances, blocks_lang)
+
+    def export_translations(self, lang):
+        """
+        This method will concatenate every translation related to the project
+        """
+        #TODO: exporter une string représentant le contenu du fichier de traduction
+        for file in self.translation_files.filter(translated_language=lang):
+            for block in file.translation_blocks.all():
+                for line in block.translation_lines.all():
+                    pass
+
 
         
 

@@ -14,5 +14,6 @@ urlpatterns = [
     path('<int:project_id>/modify_project', views.modify_project, name="modify_project"),
     path('users_exists', views.check_if_users_can_be_added_to_project, name="check_if_user_on_project"),
     path('<int:project_id>/translations/', include(translations_urls.urlpatterns_with_project)),
-    path('<int:project_id>/launch_analysis', views.launch_analysis, name='launch_analysis')
+    path('<int:project_id>/launch_analysis', views.launch_analysis, name='launch_analysis'),
+    path('<int:project_id>/export_file/<str:lang>', views.export_translation_file, name='export_file')
 ]

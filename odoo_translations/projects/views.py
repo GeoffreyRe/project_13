@@ -196,4 +196,16 @@ def launch_analysis(request, project_id):
             error_message = str(e)
         
     return JsonResponse({'success' : success, 'error_message': error_message}, safe=False, status=200)
+
+
+@login_required
+@user_is_assigned_to_project # custom decorator : see decorators.py module
+def export_translation_file(request, project_id, lang):
+    if request.method == "GET":
+        project = apps.get_model('projects.Project').objects.get(id=project_id)
+        filename = lang + ".po"
+        content = project.export_translations(lang=lang)
+        response = HttpResponse(content, content_type='text/plain')
+        response['Content-Disposition'] = 'attachment; filename={0}'.format(filename)
+        return response
             
