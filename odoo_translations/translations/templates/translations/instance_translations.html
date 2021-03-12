@@ -9,7 +9,17 @@
         {{instance_type}}
     {% endif %}
     </h4>
-    {% for block in translation_lines %}
+    <!-- Rounded switch -->
+    <div class="d-flex justify-content-center" id="switcher_lang">
+        <p id='fr-text' class="pr-2">Fr</p>
+        <label class="switch">
+            <input id="checkbox-lang" type="checkbox">
+            <span class="slider round"></span>
+        </label>
+        <p id='ndlr-text' style="color:darkgray;" class="pl-2">Ndls</p>
+    </div>
+    <div id="translations_fr">
+    {% for block in translation_lines.fr %}
         <div data-block-id="{{block.id}}" class="col-lg-8 col-12" style="padding:0.4rem 3rem; max-height:20rem; height:20rem; overflow-y:scroll; margin-bottom:0.5rem; margin-left:auto; margin-right:auto; border:solid 1px black;">
             <div class="line-infos">
             {%for line in block.lines %}
@@ -39,6 +49,39 @@
             <button class="btn btn-info rounded reset-translation d-block" data-block-id="{{block.id}}">Réinitialiser</button>
         </div>
     {% endfor %}
+    </div>
+    <div id="translations_ndlr" style="display:none;">
+        {% for block in translation_lines.ndlr %}
+            <div data-block-id="{{block.id}}" class="col-lg-8 col-12" style="padding:0.4rem 3rem; max-height:20rem; height:20rem; overflow-y:scroll; margin-bottom:0.5rem; margin-left:auto; margin-right:auto; border:solid 1px black;">
+                <div class="line-infos">
+                {%for line in block.lines %}
+                    {% if forloop.first %}
+                        <div data-line-id="{{line.id}}" data-caroussel-pos="1">
+                    {% else %}
+                        <div data-line-id="{{line.id}}" style="display:none;" data-caroussel-pos="{{forloop.counter}}">
+                    {% endif %}
+                    <div style="float:right; margin-right:-35px;">
+                        <span><i class="prev-caroussel-btn fas fa-arrow-circle-left" style="margin-right:2px;"></i><i class="nxt-caroussel-btn fas fa-arrow-circle-right"></i></span><br>
+                        {{ forloop.counter }}/{{ block.lines|length}}
+                    </div>
+                    <p><strong>Instance</strong>: <em>{{line.instance.name|truncatechars:28}}</em></p>
+                    {% if line.instance.parent %}
+                    <p><strong>Dépend de</strong>: {{line.instance.parent.name}}</p>
+                    {% endif %}
+                    <p><strong>Type d'instance</strong>: {{line.instance.instance_type.name}}</p>
+                    <p><strong>type de ligne</strong>: {{line.line_type.name}}</p>
+                </div>
+                {% endfor %}
+                </div>
+                <hr />
+                <p><strong>Texte original </strong>:</p>
+                <textarea disabled>{{block.lines.0.block.original_text}}</textarea>
+                <p><strong>Texte traduit </strong>:</p>
+                <textarea class="translated_block" data-block-id="{{block.id}}" id="translated_block_{{block.id}}">{{block.lines.0.block.translated_text}}</textarea>
+                <button class="btn btn-info rounded reset-translation d-block" data-block-id="{{block.id}}">Réinitialiser</button>
+            </div>
+        {% endfor %}
+        </div>
     <div class="text-center">
         <button id="btn-save-translations" class="btn btn-info rounded">Sauvegarder</button>
     </div>
@@ -67,6 +110,21 @@
             if (prevCaroussel.length == 1){
                 $(this).parent().parent().parent().hide()
                 prevCaroussel.show()
+            }
+        })
+
+        $('#checkbox-lang').click(function(){
+            if ($('#checkbox-lang:checked').length >= 1){
+                $('#fr-text').css('color', 'darkgray')
+                $('#ndlr-text').css('color', 'black')
+                $('#translations_fr').css('display', 'none')
+                $('#translations_ndlr').css('display', 'block')
+            }
+            else{
+                $('#translations_fr').css('display', 'block')
+                $('#translations_ndlr').css('display', 'none')
+                $('#fr-text').css('color', 'black')
+                $('#ndlr-text').css('color', 'darkgray')
             }
         })
     })

@@ -186,6 +186,7 @@ class Project(models.Model):
         """
         Instance = apps.get_model('translations.Instance')
         TranslationLine = apps.get_model('translations.TranslationLine')
+        
         if instance_id is not False:
             instance = Instance.objects.get(id=instance_id)
             query = Q(instance=instance)
@@ -194,9 +195,13 @@ class Project(models.Model):
                 children_instances = Instance.objects.filter(parent=instance)
                 query = query | Q(instance__in=children_instances)
             
-            translation_lines = TranslationLine.objects.filter(query)
-            blocks = regroup_lines_by_block(translation_lines)
-            return (instance, blocks)
+            blocks_lang = {}
+            for lang in ['fr', 'ndlr']:
+                blocks_of_lang = self.translation_files.filter(translated_language=lang).values_list('translation_blocks', flat=True)
+                translation_lines = TranslationLine.objects.filter(query & Q(block__in=blocks_of_lang))
+                blocks = regroup_lines_by_block(translation_lines)
+                blocks_lang[lang] = blocks
+            return (instance, blocks_lang)
         
         if type is not False:
             instances = self.all_instances(type=type)
@@ -204,10 +209,15 @@ class Project(models.Model):
             if with_children:
                 children_instances = Instance.objects.filter(parent__in=instances)
                 query = query | Q(instance__in=children_instances)
+
+            blocks_lang = {}
+            for lang in ['fr', 'ndlr']:
+                blocks_of_lang = self.translation_files.filter(translated_language=lang).values_list('translation_blocks', flat=True)
+                translation_lines = TranslationLine.objects.filter(query & Q(block__in=blocks_of_lang))
+                blocks = regroup_lines_by_block(translation_lines)
+                blocks_lang[lang] = blocks
             
-            translation_lines = TranslationLine.objects.filter(query)
-            blocks = regroup_lines_by_block(translation_lines)
-            return (instances, blocks)
+            return (instances, blocks_lang)
 
         
 
