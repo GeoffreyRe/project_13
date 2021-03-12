@@ -6,12 +6,36 @@
     {% if not instances %}
         <p>Aucune instance n'existe pour l'instant</p>
     {% else %}
-        <ul>
-            <li><a href="{% url 'all_instance_translations' project_id=project.id instance_type=instance_type %}">Voir toutes les traductions</a></li>
-        {% for instance in instances %}
-            <li><a href="{% url 'instance_translations' project_id=instance.project.id instance_id=instance.id instance_type=instance_type%}">{{instance.name}}</a></li>
-        {% endfor %}
-        </ul>
+        <div class="container">
+            <div class="row mb-2 mt-2">
+                <div class="col-1 col-md-2 col-lg-3">
+                </div>
+                <div class="border col-10 col-md-8 col-lg-6">
+                    <div style="text-align:center;">
+                        <p><a href="{% url 'all_instance_translations' project_id=project.id instance_type=instance_type %}">Voir toutes les traductions</a></p>
+                        <p>{{total_translations.fr}} traductions française(s)</br>
+                            {{total_translations.ndlr}} traductions néérlandaise(s)</p>
+                    </div>
+                </div>
+                <div class="col-1 col-md-2 col-lg-3">
+                </div>
+            </div>
+            {% for instance in instances %}
+            <div class="row mb-2 mt-2">
+                <div class="col-1 col-md-2 col-lg-3">
+                </div>
+                <div class="border col-10 col-md-8 col-lg-6">
+                    <div style="text-align:center;">
+                        <a href="{% url 'instance_translations' project_id=instance.instance.project.id instance_id=instance.instance.id instance_type=instance_type%}">{{instance.instance.name}}</a>
+                        <p>{{instance.nb_fr}} traductions française(s)</br>
+                            {{instance.nb_ndlr}} traductions néérlandaise(s)</p>
+                    </div>
+                </div>
+                <div class="col-1 col-md-2 col-lg-3">
+                </div>
+            </div>
+            {% endfor %}
+        </div>
     {% endif %}
 </div>
 {% endblock %}

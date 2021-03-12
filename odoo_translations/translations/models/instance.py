@@ -40,3 +40,9 @@ class Instance(models.Model):
             sentence += " et enfant de l'instance {} (type {})".format(self.parent.name, self.parent.instance_type.name)
 
         return sentence
+    
+    def get_number_of_translations(self, lang='fr'):
+        blocks_list = self.project.translation_files.filter(translated_language=lang).values_list('translation_blocks', flat=True)
+        total_translations = len(apps.get_model('translations.TranslationLine').objects.filter(instance=self, block__in=blocks_list)) + \
+            len(apps.get_model('translations.TranslationLine').objects.filter(instance__in=self.instance_childs.all(), block__in=blocks_list))
+        return total_translations

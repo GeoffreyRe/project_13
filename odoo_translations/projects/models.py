@@ -172,10 +172,17 @@ class Project(models.Model):
             translation_file.analyze_content()
 
     def all_instances(self, type="ir.model"):
+        instances = []
         InstanceType = apps.get_model('translations.InstanceType')
         Instance = apps.get_model('translations.Instance')
         instance_type = InstanceType.objects.get(name=type)
-        return Instance.objects.filter(project=self.id, instance_type=instance_type)
+        for instance in Instance.objects.filter(project=self.id, instance_type=instance_type):
+            instances.append({
+                'instance': instance,
+                'nb_fr': instance.get_number_of_translations(),
+                'nb_ndlr': instance.get_number_of_translations(lang='ndlr')
+            })
+        return instances
     
     def translations_instances(self, instance_id=False, with_children=True, type=False):
         """

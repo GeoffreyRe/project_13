@@ -180,7 +180,8 @@ class TranslationBlock(models.Model):
                 pass
 
             else:
-                return (True, 'Erreur :Fichier {}, ligne {} non reconnue'.format(file_name, line_pos))
+                supported_lines.append(line.strip())
+                #return (True, 'Erreur :Fichier {}, ligne {} non reconnue'.format(file_name, line_pos))
             
         
         if (not msgid_text) or (not msgstr_text):

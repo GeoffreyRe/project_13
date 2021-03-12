@@ -29,7 +29,8 @@ class TranslationLine(models.Model):
     def find_or_create_instance(self, name, instance_type, instance_line_type):
         Instance = apps.get_model('translations', 'Instance')
         instance = Instance.objects.filter(name=name,
-                                            instance_type=instance_type)       
+                                            instance_type=instance_type,
+                                            project=self.block.file.project)       
         if len(instance) == 1:
             instance = instance[0]
         else:
@@ -95,12 +96,14 @@ class TranslationLine(models.Model):
                 found = False
                 model_field_parts = model_field_name.split('_')
                 module_instance = Instance.objects.filter(name=instance_name_parts[0],
-                                                        instance_type=module_instance_type)
+                                                        instance_type=module_instance_type,
+                                                        project=self.block.file.project)
 
                 while found == False and len(model_field_parts) >= 1:
                     
                     model_instance = Instance.objects.filter(name="_".join(model_field_parts),
-                                            instance_type=model_instance_type)
+                                            instance_type=model_instance_type,
+                                            project=self.block.file.project)
                     
                     if len(model_instance) == 1:
                         model_instance = model_instance[0]
@@ -120,7 +123,8 @@ class TranslationLine(models.Model):
 
                 field_instance = Instance.objects.filter(name=field_name,
                                             instance_type=field_instance_type,
-                                            parent=model_instance)
+                                            parent=model_instance,
+                                            project=self.block.file.project)
                 if len(field_instance) == 1:
                     field_instance = field_instance[0]
                 else:
@@ -157,7 +161,8 @@ class TranslationLine(models.Model):
             elif instance_type_name == "code":
                 # TODO: Try to integrate this part inside find_or_create_instance function
                 code_instance = Instance.objects.filter(name=instance_name_parts[0],
-                                                            instance_type=code_instance_type)
+                                                            instance_type=code_instance_type,
+                                                            project=self.block.file.project)
                 
                 if len(code_instance) == 1:
                     code_instance = code_instance[0]
@@ -170,7 +175,8 @@ class TranslationLine(models.Model):
 
                 code_pos_instance = Instance.objects.filter(name=instance_name_parts[1],
                                                             instance_type=code_pos_instance_type,
-                                                            parent=code_instance)
+                                                            parent=code_instance,
+                                                            project=self.block.file.project)
                 if len(code_pos_instance) == 1:
                     code_pos_instance = code_pos_instance[0]
                 else:
