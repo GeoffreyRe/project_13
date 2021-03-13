@@ -204,6 +204,7 @@ def export_translation_file(request, project_id, lang):
     if request.method == "GET":
         project = apps.get_model('projects.Project').objects.get(id=project_id)
         filename = lang + ".po"
+        #import pdb; pdb.set_trace()
         content = project.export_translations(lang=lang)
         response = HttpResponse(content, content_type='text/plain')
         response['Content-Disposition'] = 'attachment; filename={0}'.format(filename)

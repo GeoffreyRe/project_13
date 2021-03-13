@@ -231,10 +231,47 @@ class Project(models.Model):
         This method will concatenate every translation related to the project
         """
         #TODO: exporter une string représentant le contenu du fichier de traduction
+        content = ("# Translation of Odoo Server.\n"
+                    "# This file contains the translation of the following modules:\n"
+                    "#	* belcco\n"
+                    "#\n"
+                    "msgid \"\"\n"
+                    "msgstr \"\"\n"
+                    "\"Project-Id-Version: Odoo Server 11.0+e\"\n"
+                    "\"Report-Msgid-Bugs-To: \"\n"
+                    "\"POT-Creation-Date: 2020-10-23 11:16+0000\"\n"
+                    "\"PO-Revision-Date: 2020-10-23 11:16+0000\"\n"
+                    "\"Last-Translator: <>\"\n"
+                    "\"Language-Team:\"\n"
+                    "\"MIME-Version: 1.0\"\n"
+                    "\"Content-Type: text/plain; charset=UTF-8\"\n"
+                    "\"Content-Transfer-Encoding:\"\n"
+                    "\"Plural-Forms:\"\n\n")
+        
         for file in self.translation_files.filter(translated_language=lang):
-            for block in file.translation_blocks.all():
+            for block in file.translation_blocks.filter(is_header=False):
+                module_line = block.translation_lines.filter(instance__instance_type__name='module')
+                module_name = module_line[0].instance.name.strip() if (module_line and module_line[0].instance) else ""
                 for line in block.translation_lines.all():
-                    pass
+                    if line.instance.instance_type.name == "module":
+                        content += "#. module: {}".format(module_name)
+                    elif line.instance.instance_type.name == "code.position":
+                        content += "#: code:{}:{}".format(line.instance.parent.name, line.instance.name)
+                    elif line.instance.instance_type.name in ['ir.model', 'ir.ui.view', 'ir.ui.menu', 'ir.actions.act_window']:
+                        content += "#: model:{},{}:{}.{}".format(line.instance.instance_type.name,
+                                                                line.line_type.name, module_name, line.instance.name)
+                    elif line.instance.instance_type.name == 'ir.model.fields':
+                        content += "#: model:{},{}:{}.field_{}_{}".format(line.instance.instance_type.name,
+                                                                line.line_type.name, module_name, line.instance.parent.name, line.instance.name)
+                    elif line.instance.instance_type.name == "other":
+                        content += line.instance.name
+                    
+                    content += "\n"
+                content += "msgid \"{}\"".format(block.original_text) + "\n"
+                content += "msgstr \"{}\"".format(block.translated_text) + "\n\n"
+
+        return content
+                
 
 
         
