@@ -7,7 +7,7 @@ from users.models import User
 from .managers import CustomProjectManager
 from projects.utils import regroup_lines_by_block
 from translations.exceptions import NoFileForProjectError, FileParsingError
-
+import datetime
 # Create your models here.
 class NameValues(models.TextChoices):
     """
@@ -231,22 +231,32 @@ class Project(models.Model):
         This method will concatenate every translation related to the project
         """
         #TODO: exporter une string représentant le contenu du fichier de traduction
+        date_now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M')
+        module_type = apps.get_model('translations.InstanceType').objects.get(name='module')
+        module_instances = apps.get_model('translations.Instance').objects.filter(project=self, instance_type=module_type)
+        module_instance_ids = apps.get_model('translations.TranslationLine').objects.filter(
+            block__file__project=self.id,
+            block__file__translated_language=lang,
+            instance__in=module_instances.values_list('id', flat=True)
+            ).values_list('instance', flat=True)
+        module_instance_names = apps.get_model('translations.Instance').objects.filter(id__in=module_instance_ids).values_list('name', flat=True)
+        modules_in_file = "\n".join(["#       * " + module.strip()  for module in module_instance_names])
         content = ("# Translation of Odoo Server.\n"
                     "# This file contains the translation of the following modules:\n"
-                    "#	* belcco\n"
+                    "{}"
                     "#\n"
                     "msgid \"\"\n"
                     "msgstr \"\"\n"
-                    "\"Project-Id-Version: Odoo Server 11.0+e\"\n"
-                    "\"Report-Msgid-Bugs-To: \"\n"
-                    "\"POT-Creation-Date: 2020-10-23 11:16+0000\"\n"
-                    "\"PO-Revision-Date: 2020-10-23 11:16+0000\"\n"
-                    "\"Last-Translator: <>\"\n"
-                    "\"Language-Team:\"\n"
-                    "\"MIME-Version: 1.0\"\n"
-                    "\"Content-Type: text/plain; charset=UTF-8\"\n"
-                    "\"Content-Transfer-Encoding:\"\n"
-                    "\"Plural-Forms:\"\n\n")
+                    "\"Project-Id-Version: Odoo Server 11.0+e\\n\"\n"
+                    "\"Report-Msgid-Bugs-To: \\n\"\n"
+                    "\"POT-Creation-Date: {}+0000\\n\"\n"
+                    "\"PO-Revision-Date: {}+0000\\n\"\n"
+                    "\"Last-Translator: <>\\n\"\n"
+                    "\"Language-Team: \\n\"\n"
+                    "\"MIME-Version: 1.0\\n\"\n"
+                    "\"Content-Type: text/plain; charset=UTF-8\\n\"\n"
+                    "\"Content-Transfer-Encoding: \\n\"\n"
+                    "\"Plural-Forms: \\n\"\n\n").format(modules_in_file + ("\n" if modules_in_file else ""), date_now, date_now)
         
         for file in self.translation_files.filter(translated_language=lang):
             for block in file.translation_blocks.filter(is_header=False):
