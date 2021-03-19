@@ -230,7 +230,6 @@ class Project(models.Model):
         """
         This method will concatenate every translation related to the project
         """
-        #TODO: exporter une string représentant le contenu du fichier de traduction
         date_now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M')
         module_type = apps.get_model('translations.InstanceType').objects.get(name='module')
         module_instances = apps.get_model('translations.Instance').objects.filter(project=self, instance_type=module_type)

@@ -1,4 +1,5 @@
 .env
+.coverage
 env/
 __pycache__/
 odoo_translations/media/
