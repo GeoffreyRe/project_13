@@ -1,6 +1,6 @@
 from django.db import models ,IntegrityError, transaction
 from django.db.models import Q
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.utils import timezone
 from django.apps import apps
 from users.models import User
@@ -71,14 +71,17 @@ class Project(models.Model):
         UserModel = apps.get_model('users', 'User')
         RoleModel = apps.get_model('projects', 'Role')
         role_to_attribute = RoleModel.objects.get(name=role)
-        new_user = UserModel.objects.get(email=email)
-        new_invitation = InvitationModel(
+        try:
+            new_user = UserModel.objects.get(email=email)
+            new_invitation = InvitationModel(
             project=self,
             user=new_user,
             inviting_user=inviting_user,
             user_role=role_to_attribute
-        )
-        new_invitation.save()
+            )
+            new_invitation.save()
+        except ObjectDoesNotExist:
+            pass
     
     def modify_roles_of_user_on_project(self, values, user):
         for user_dict in values:
@@ -128,13 +131,13 @@ class Project(models.Model):
             if config_files is True:
                 try:
                     file_to_delete = apps.get_model('translations', 'ConfigFile').objects.get(id=int(file_id))
-                except DoesNotExist:
+                except ObjectDoesNotExist:
                     pass
             else:
                 TranslationFileModel = apps.get_model('translations', 'TranslationFile')
                 try:
                     file_to_delete = TranslationFileModel.objects.get(id=int(file_id))
-                except DoesNotExist:
+                except ObjectDoesNotExist:
                     pass
             
             
@@ -292,7 +295,8 @@ class Invitation(models.Model):
     project = models.ForeignKey(
         Project,
         on_delete=models.CASCADE,
-        null=False
+        null=False,
+        related_name='invitations'
     )
     user = models.ForeignKey(
         User,
@@ -319,6 +323,7 @@ class Invitation(models.Model):
 
     def is_accepted(self):
         self.accepted = True
+        self.save()
     
     def is_refused(self):
         self.accepted = False
