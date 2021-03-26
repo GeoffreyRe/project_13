@@ -37,14 +37,6 @@ def invitations_list_view(request):
 @login_required
 def create_project(request):
     if request.method == 'POST':
-        #import pdb; pdb.set_trace()
-        """
-        new_project = Project(name=request.POST['name'],
-                            description=request.POST['description'],
-                            creation_date=request.POST['initial-creation_date'],
-                            creator=request.user)
-        new_project.save()
-        """
         vals = {'name' : request.POST['name'],
         'description' : request.POST['description'],
         'creation_date' : request.POST['initial-creation_date'],
@@ -55,7 +47,6 @@ def create_project(request):
 
 @login_required
 def view_verification_project_name(request):
-    #import pdb;pdb.set_trace()
     if request.method == "POST":
         current_user = request.user
         project_name = request.POST.get('project_name', None)
@@ -77,7 +68,6 @@ def from_invitation_to_project(request):
         if invitation is not None:
             result = invitation.from_invitation_to_project()
         return JsonResponse({'success' : result}, safe=False, status=200)
-        return JsonResponse({'success' : True}, safe=False, status=200)
     
 @login_required
 def invitation_refused(request):
@@ -157,7 +147,6 @@ def detail_project_modifications(request, project_id):
 def modify_project(request, project_id):
     if request.method == "POST":
         user = request.user
-        #import pdb; pdb.set_trace()
         datas = organise_datas(request.POST, request.FILES)
         project_to_modify = Project.objects.get(id=datas['infos_user']['project']['id'])
         project_to_modify.update_project(datas, user)
