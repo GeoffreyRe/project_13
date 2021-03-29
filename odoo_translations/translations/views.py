@@ -16,7 +16,6 @@ INSTANCES_DICT = {'models': 'ir.model',
 @login_required
 @user_is_assigned_to_project
 def instance_translation_list(request, project_id, instance_type):
-    
     Project = apps.get_model('projects.Project')
     project = Project.objects.get(id=project_id)
     instances = project.all_instances(type=INSTANCES_DICT[instance_type])
@@ -56,10 +55,9 @@ def all_instance_translations(request, project_id, instance_type):
     return render(request, 'translations/instance_translations.html', context)
 
 
-@login_required
+#@login_required
 def get_block_translation(request):
     if request.method == "GET":
-        
         block_id = int(request.GET['block'])
         Block = apps.get_model('translations.TranslationBlock')
         block = Block.objects.get(id=block_id)

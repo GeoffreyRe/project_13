@@ -2,11 +2,14 @@ from django.test import TestCase, Client
 from django.utils import timezone
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from projects.models import Project, Role, UserProject, Invitation
-from translations.models import TranslationFile
+from translations.models import TranslationFile, TranslationBlock, TranslationLine
+from translations.exceptions import FileParsingError
 from users.models import User
 from unittest import mock
+from .utils import *
 import datetime
 import io
+import json
 
 # Create your tests here.
 class ProjectTest(TestCase):
@@ -338,7 +341,6 @@ class ProjectViewTest(TestCase):
     @mock.patch('projects.models.Project.update_project')
     def test_view_modify_project_returns_true_if_everything_ok(self, mock_update_project, mock_organise, mock_get):
         self.client.login(email='test@test.com', password='1234')
-        #breakpoint()
         mock_organise.return_value = {'infos_user': {'project':{'id': None}}}
         response = self.client.post(f'/project/{self.project_test.id}/modify_project', {})
         self.assertEqual(response.json()['success'], True)
@@ -347,8 +349,96 @@ class ProjectViewTest(TestCase):
         response = self.client.post('/project/users_exists', {'datas': ""})
         self.assertEqual(response.json()['success'], True)
 
-        
+    @mock.patch('projects.models.Project.analyze_translation_files')
+    @mock.patch('projects.models.Project.delete_translations')
+    def test_launch_analysis_returns_true(self, mock_delete, mock_analyze):
+        mock_delete.return_value = True
+        mock_analyze.return_value = True
+        self.client.login(email='test@test.com', password='1234')
+        response = self.client.post(f'/project/{self.project_test.id}/launch_analysis', {})
+        self.assertEqual(response.json()['success'], True)
+    
+    @mock.patch('projects.models.Project.analyze_translation_files')
+    @mock.patch('projects.models.Project.delete_translations')
+    def test_launch_analysis_returns_error_message_when_error(self, mock_delete, mock_analyze):
+        mock_delete.return_value = True
+        error_msg = "Une erreur dans l'analyse des fichiers est survenue"
+        # this side effect will raise FileParsingError when call
+        mock_analyze.side_effect = FileParsingError(error_msg)
+        self.client.login(email='test@test.com', password='1234')
+        response = self.client.post(f'/project/{self.project_test.id}/launch_analysis', {})
+        self.assertEqual(response.json()['success'], False)
+        self.assertEqual(response.json()['error_message'], error_msg)
 
-        
-        
+    @mock.patch('projects.models.Project.objects.get')
+    @mock.patch('users.models.User.userproject_set')
+    def test_export_translations_returns_translation_file(self, mock_filter,mock_get):
+        mock_filter.filter.return_value = ['project 1']
+        ProjectMock = mock.MagicMock()
+        export_translations_mock = mock.MagicMock()
+        export_translations_mock.return_value = 'fichier test 1234'
+        ProjectMock.export_translations = export_translations_mock
+        mock_get.return_value = ProjectMock
+        self.client.login(email='test@test.com', password='1234')
+        response = self.client.get('/project/125/export_file/fr')
+        self.assertEqual(response.content, bytes('fichier test 1234', encoding='utf8'))
+        self.assertEqual(response['content-Disposition'], 'attachment; filename=fr.po')
 
+class ProjectUtilsTest(TestCase):
+    """
+    This class contains tests of utils of 'projects' application
+    """
+
+    def setUp(self):
+        """
+        This function is executed each time a new test function is executed
+        """
+        self.client = Client()
+        self.user1 = User.objects.create_user(
+            username="Michel", password="1234", email="test@test.com")
+        self.user2 = User.objects.create_user(
+            username="Jean", password="1234", email="jean@test.com")
+        
+        self.project_test = Project.objects.create(**{
+            'name': 'projet 1',
+            'description': 'description 1',
+            'creator': self.user1})
+        self.dev_role = Role.objects.create(name="DEV")
+        UserProject.objects.create(
+            project=self.project_test,
+            user=self.user1,
+            user_role=self.dev_role)
+    
+    def test_nest_list(self):
+        list = [1,2,3,4,5,6]
+        list_nested = nest_list(list)
+        self.assertEqual(list_nested, [[1,2],[3,4],[5,6]])
+    
+    def test_organise_data(self):
+        data = {
+            'infos_user': json.dumps({
+            'email': 'test@test.com'
+            }),
+            'files_total': json.dumps(1),
+            'files_to_delete': json.dumps([]),
+            'config_files_to_delete': json.dumps([]),
+            'lang_0': 'fr',
+            'template_0': json.dumps(False)
+        }
+        files = {
+            'file_0': 'fr.po'
+        }
+        expected_result = {
+            'infos_user': {
+            'email': 'test@test.com'
+            },
+            'files': [{'file': 'fr.po', 'lang': 'fr', 'template': False}],
+            'files_to_delete': [],
+            'config_files_to_delete': []
+        }
+        self.assertEqual(organise_datas(data, files), expected_result)
+    
+    @mock.patch('translations.models.types.InstanceType.objects.get')
+    def test_regroup_lines_by_block(self, mock_get):
+        self.assertEqual(regroup_lines_by_block([]), [])
+        
