@@ -1,5 +1,7 @@
 import json
 from django.apps import apps
+
+
 def nest_list(list):
     index = 0
     max_index = len(list)
@@ -8,6 +10,7 @@ def nest_list(list):
         nested.append(list[index:index + 2])
         index += 2
     return nested
+
 
 def organise_datas(datas, files):
     organised_datas = {}
@@ -30,6 +33,7 @@ def organise_datas(datas, files):
 
     return organised_datas
 
+
 def regroup_lines_by_block(lines):
     """
     This function will regroup lines into block for presentation purpose
@@ -43,18 +47,18 @@ def regroup_lines_by_block(lines):
     for line in lines:
         # for each line, we check if we already add it into a block
         # if it is the case, we don't add it a second time (but can be changed)
-        # else, we find other lines of the block of the line (excepted module line and the line itself)
+        # else, we find other lines of the block of the line
+        # (excepted module line and the line itself)
         if line.id in lines_in_blocks:
             continue
 
         lines_in_blocks.append(line.id)
-        related_lines =line.block.translation_lines.exclude(
+        related_lines = line.block.translation_lines.exclude(
             instance__instance_type=module_type).exclude(
                 instance__instance_type=module_type).exclude(id=line.id)
         related_lines_ids = related_lines.values_list('id', flat=True)
-        
-        lines_in_blocks += related_lines_ids
-        blocks.append({'id':line.block.id,
-        'lines': [line] + [related_line for related_line in related_lines]})
-    return blocks
 
+        lines_in_blocks += related_lines_ids
+        blocks.append({'id': line.block.id,
+                       'lines': [line] + [related_line for related_line in related_lines]})
+    return blocks
