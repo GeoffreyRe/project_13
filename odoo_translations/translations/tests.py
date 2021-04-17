@@ -299,6 +299,6 @@ class TranslationsViewsTest(TestCase):
     
     def test_get_block_translation(self):
         self.client.login(email='test@test.com', password='1234')
-        #breakpoint()
-        response = self.client.get('/translations/get_translations', {'block': self.block.id})
-        #self.assertEqual(response.json()['translation'], self.block.translated_text)
+        response = self.client.get('/translations/get_translations/', {'block': self.block.id})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()['translation'], self.block.translated_text)
