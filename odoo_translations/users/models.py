@@ -1,13 +1,13 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from django.core.exceptions import ValidationError
 # Create your models here.
+
 
 class User(AbstractUser):
     email = models.EmailField(max_length=80, unique=True)
     username = models.CharField(max_length=80, null=False, blank=False)
-    USERNAME_FIELD="email"
-    REQUIRED_FIELDS=['username']
+    USERNAME_FIELD = "email"
+    REQUIRED_FIELDS = ['username']
 
     def __str__(self):
         return self.username + " <{}>".format(self.email)
@@ -29,9 +29,8 @@ class User(AbstractUser):
                 # if user has a role which allows him to write on project, return True
                 return True
         return False
-    
-    def is_on_project(project_id):
+
+    def is_on_project(self, project_id):
         project = self.userproject_set.filter(project=project_id)
         is_on_project = True if len(project) > 0 else False
         return is_on_project
-
