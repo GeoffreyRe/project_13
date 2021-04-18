@@ -4,11 +4,13 @@ class FileParsingError(Exception):
     """
     pass
 
+
 class NoOdooTranslationFileHeader(FileParsingError):
     """
     This error will be raised if not any header is found in odoo File
     """
     pass
+
 
 class NoFileForProjectError(FileParsingError):
     """
@@ -16,11 +18,13 @@ class NoFileForProjectError(FileParsingError):
     """
     pass
 
+
 class NoTranslationFoundInFileError(FileParsingError):
     """
     This error will be raised if there is 0 translation block found in file
     """
     pass
+
 
 class TranslationBlockStructureNotGoodError(FileParsingError):
     """

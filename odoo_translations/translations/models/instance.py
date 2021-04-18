@@ -1,6 +1,5 @@
 from django.db import models
 from django.apps import apps
-from translations.exceptions import NoTranslationFoundInFileError, NoOdooTranslationFileHeader, TranslationBlockStructureNotGoodError
 
 
 class Instance(models.Model):
@@ -16,12 +15,12 @@ class Instance(models.Model):
     name = models.CharField(max_length=300, null=False, blank=False)
     instance_type = models.ForeignKey(
                                     'translations.InstanceType',
-                                    on_delete= models.PROTECT,
+                                    on_delete=models.PROTECT,
                                     null=False
                                     )
-    parent= models.ForeignKey(
+    parent = models.ForeignKey(
                             "self",
-                            on_delete = models.CASCADE,
+                            on_delete=models.CASCADE,
                             related_name="instance_childs",
                             null=True,
                             blank=True
@@ -37,12 +36,21 @@ class Instance(models.Model):
     def __str__(self):
         sentence = "instance {} de type {}".format(self.name, self.instance_type.name)
         if self.parent is not None:
-            sentence += " et enfant de l'instance {} (type {})".format(self.parent.name, self.parent.instance_type.name)
+            sentence += " et enfant de l'instance {} (type {})".format(
+                self.parent.name,
+                self.parent.instance_type.name
+                )
 
         return sentence
-    
+
     def get_number_of_translations(self, lang='fr'):
-        blocks_list = self.project.translation_files.filter(translated_language=lang).values_list('translation_blocks', flat=True)
-        total_translations = len(apps.get_model('translations.TranslationLine').objects.filter(instance=self, block__in=blocks_list)) + \
-            len(apps.get_model('translations.TranslationLine').objects.filter(instance__in=self.instance_childs.all(), block__in=blocks_list))
+        blocks_list = self.project.translation_files.filter(
+            translated_language=lang
+            ).values_list('translation_blocks', flat=True)
+        total_translations = len(apps.get_model(
+            'translations.TranslationLine'
+            ).objects.filter(instance=self, block__in=blocks_list)) + \
+            len(apps.get_model(
+                'translations.TranslationLine'
+                ).objects.filter(instance__in=self.instance_childs.all(), block__in=blocks_list))
         return total_translations

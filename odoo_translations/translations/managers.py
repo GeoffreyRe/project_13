@@ -1,10 +1,10 @@
 from django.db import models
 from django.apps import apps
 
+
 class CustomTranslationBlockManager(models.Manager):
 
-    
-    def create_block_from_data(self, data, file, block_position=False,is_header=False):
+    def create_block_from_data(self, data, file, block_position=False, is_header=False):
         TranslationLine = apps.get_model('translations', 'TranslationLine')
         if is_header is True:
             # if it is a header
@@ -14,7 +14,7 @@ class CustomTranslationBlockManager(models.Manager):
                 raw_text="\n".join(data)
             )
             return block
-        
+
         else:
             # else, it is a standard block
             block = self.create(
@@ -31,7 +31,8 @@ class CustomTranslationBlockManager(models.Manager):
 
     def update_translated_texts(self, values):
         """
-        This method takes as argument a list of dict with 2 key/values: - id of block and new translated text
+        This method takes as argument a list of dict with 2 key/values:
+        - id of block and new translated text
         """
         for block_val in values:
             block_id = block_val['id']

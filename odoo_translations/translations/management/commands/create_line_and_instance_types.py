@@ -1,15 +1,17 @@
-from django.core.management.base import BaseCommand, CommandError
-from translations.models import InstanceType,LineType
+from django.core.management.base import BaseCommand
+from translations.models import InstanceType, LineType
 from projects.models import Role
+
 
 class Command(BaseCommand):
     help = 'Append required line type and instance type to database'
 
     def handle(self, *args, **options):
         types = {'lines': ['field_description', 'name', 'help', 'code', 'other', 'arch_db'],
-                'instances': ['module', 'ir.model', 'ir.ui.view', 'ir.ui.menu',
-                'ir.actions.act_window', 'other', 'ir.model.fields', 'code', 'code.position'],
-                'user_role': ['DEV', 'TRA']}
+                 'instances': ['module', 'ir.model', 'ir.ui.view', 'ir.ui.menu',
+                               'ir.actions.act_window', 'other', 'ir.model.fields',
+                               'code', 'code.position'],
+                 'user_role': ['DEV', 'TRA']}
         create = False
         for line_type in types['lines']:
             line_obj = LineType.objects.filter(name=line_type)
@@ -22,7 +24,7 @@ class Command(BaseCommand):
             if not instance_obj:
                 create = True
                 InstanceType.objects.create(name=instance_type)
-        
+
         for role in types['user_role']:
             Role.objects.get_or_create(name=role)
 

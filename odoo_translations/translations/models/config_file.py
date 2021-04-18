@@ -4,9 +4,9 @@ from django.db.models.signals import post_delete
 from django.db import models
 from django.apps import apps
 from django.dispatch import receiver
-from translations.exceptions import NoTranslationFoundInFileError, NoOdooTranslationFileHeader, TranslationBlockStructureNotGoodError
 
 logger = logging.getLogger(__name__)
+
 
 class ConfigFile(models.Model):
     """
@@ -18,10 +18,10 @@ class ConfigFile(models.Model):
 
     #  type of configuration file
     name = models.CharField(max_length=40, null=False, blank=True)
-    type = models.CharField(max_length=40, 
+    type = models.CharField(max_length=40,
                             null=False,
                             choices=CONFIG_TYPES)
-    
+
     # the project related to this file
     project = models.ForeignKey(
         'projects.Project',
@@ -45,11 +45,10 @@ class ConfigFile(models.Model):
         filename : the name of the file that has been uploaded
         """
         project_directory_name = str(instance.project.id) + "_" + instance.project.name
-        
-        return "config_files/{0}/{1}".format(project_directory_name, filename)
-    
-    file = models.FileField(upload_to=get_file_location, null=False)
 
+        return "config_files/{0}/{1}".format(project_directory_name, filename)
+
+    file = models.FileField(upload_to=get_file_location, null=False)
 
     def analyze(self):
         if self.type == "model":
@@ -70,18 +69,13 @@ class ConfigFile(models.Model):
                     if model_name:
                         # if model_name is not empty
                         # we will look if a model instance already exists, else we create it
-                        model_instance = Instance.objects.get_or_create(name=model_name,
-                                                instance_type=model_type,
-                                                project=self.project)
-    
+                        Instance.objects.get_or_create(name=model_name,
+                                                       instance_type=model_type,
+                                                       project=self.project)
+
     class Meta:
         # rename table created by django in db
-        db_table="config_file"
-
-
-
-
-
+        db_table = "config_file"
 
 
 @receiver(post_delete, sender=ConfigFile)
@@ -99,8 +93,14 @@ def delete_file_associated_with_config_file(sender, instance, **kwargs):
                 os.remove(absolute_path)
                 logger.info("le fichier de l'instance {} a bien été supprimée".format(instance))
             except OSError:
-                logger.error("Un problème est survenu lors de la suppression du fichier de {}".format(instance))
+                logger.error(
+                    "Un problème est survenu lors"
+                    "de la suppression du fichier de {}".format(instance))
         else:
-            logger.error("Le chemin spécifié pour l'instance {} correspond à un dossier".format(instance))
+            logger.error(
+                "Le chemin spécifié pour l'instance"
+                " {} correspond à un dossier".format(instance))
     else:
-        logger.error("L'instance {} n'a pas de fichier lié ou le chemin spécifié pour le fichier n'existe pas".format(instance))
+        logger.error(
+            "L'instance {} n'a pas de fichier lié"
+            " ou le chemin spécifié pour le fichier n'existe pas".format(instance))
