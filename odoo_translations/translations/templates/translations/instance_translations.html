@@ -43,9 +43,9 @@
             </div>
             <hr />
             <p><strong>Texte original </strong>:</p>
-            <textarea disabled>{{block.lines.0.block.original_text}}</textarea>
+            <textarea style="width:100%;" disabled>{{block.lines.0.block.original_text}}</textarea>
             <p><strong>Texte traduit </strong>:</p>
-            <textarea class="translated_block" data-block-id="{{block.id}}" id="translated_block_{{block.id}}">{{block.lines.0.block.translated_text}}</textarea>
+            <textarea style="width:100%;" class="translated_block" data-block-id="{{block.id}}" id="translated_block_{{block.id}}">{{block.lines.0.block.translated_text}}</textarea>
             <button class="btn btn-info rounded reset-translation d-block" data-block-id="{{block.id}}">Réinitialiser</button>
         </div>
     {% endfor %}
@@ -75,9 +75,9 @@
                 </div>
                 <hr />
                 <p><strong>Texte original </strong>:</p>
-                <textarea disabled>{{block.lines.0.block.original_text}}</textarea>
+                <textarea style="width:100%;" disabled>{{block.lines.0.block.original_text}}</textarea>
                 <p><strong>Texte traduit </strong>:</p>
-                <textarea class="translated_block" data-block-id="{{block.id}}" id="translated_block_{{block.id}}">{{block.lines.0.block.translated_text}}</textarea>
+                <textarea style="width:100%;" class="translated_block" data-block-id="{{block.id}}" id="translated_block_{{block.id}}">{{block.lines.0.block.translated_text}}</textarea>
                 <button class="btn btn-info rounded reset-translation d-block" data-block-id="{{block.id}}">Réinitialiser</button>
             </div>
         {% endfor %}

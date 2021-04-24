@@ -17,7 +17,9 @@
         <form action="{% url 'create_project' %}" method="post" class="form-group row">
         {% csrf_token %}
         {{ form }}
-        <input type="submit" value="Créer" class="btn btn-primary submit-button" />
+        <div class="ml-auto mr-auto mt-1">
+            <input type="submit" value="Créer" class="btn text-white m-auto bg-info submit-button" />
+        </div>
         </form>
         </div>
     </div>
