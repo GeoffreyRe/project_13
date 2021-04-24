@@ -1,0 +1,258 @@
+.masthead
+{
+    background-color:rgb(255,255,255) !important;
+    color:black !important;
+    align-items:stretch;
+    align-content:stretch;
+    position:relative;
+}
+
+.vertical-menu
+{
+    display:flex;
+    width:fit-content;
+    background-color:rgb(89,113,137);
+    color:white;
+    padding-left:5px;
+}
+
+.sub-menu-full-display
+{
+    display:block !important;
+    width:1%;
+    position:absolute;
+    top:-2px;
+    height:101%;
+    z-index:1000;
+}
+
+#sub-menu-tab{
+    background-color:rgb(89,113,137);
+    color:white;
+    display:block;
+    margin-right:0;
+    width:fit-content;
+    height:fit-content;
+    padding:2px;
+}
+
+#close-sub-menu-tab{
+    display:inline-block;
+    background-color: white;
+    color:rgb(89,113,137);
+    position:absolute;
+    top:3px;
+    right:0;
+}
+
+.page-content
+{
+    flex-grow:1000;
+}
+
+.vertical-menu li
+{
+    list-style: none;
+    padding:none;
+}
+
+.vertical-menu ul
+{
+    padding:0;
+}
+
+ul ul
+{
+    padding-left:40px !important;
+    transition:opacity 0.5s;
+    opacity:0;
+}
+
+.vertical-menu li
+{
+    padding:3px;
+    padding-top:0;
+    cursor:pointer;
+}
+
+.vertical-menu li:hover
+{
+    color:rgb(190, 197, 204);
+}
+
+.arrow-dropdown
+{
+    transform:rotate(0);
+    transition:transform 0.5s;
+}
+
+.rotation-45-degrees
+{
+    transform:rotate(0.25turn);
+}
+
+.disabled-link-style
+{
+    color:white;
+    
+}
+
+.disabled-link-style:hover
+{
+    text-decoration: none;
+    color:white;
+}
+
+.element-no-wrap
+{
+    white-space: nowrap;
+    margin-right:5px;
+}
+
+.block-users-project
+{
+    width:fit-content;
+}
+
+.block-users
+{
+    width:fit-content;
+}
+
+.block-files
+{
+    width:fit-content;
+}
+
+.block-files-project .block-files-config-project
+{
+    width:fit-content;
+}
+
+.file_infos
+{
+    position:relative;
+    width:auto;
+    padding:1rem;
+    margin-left:1rem;
+    overflow-x: hidden;
+}
+
+.btn-delete-file, .btn-delete-config-file
+{
+    position:absolute;
+    right:5px;
+    top:5px;
+    transition:color 0.4s;
+    cursor:pointer;
+}
+
+.btn-delete-file:hover, .btn-delete-config-file:hover
+{
+    color:red;
+}
+
+.btn-delete-user
+{
+    cursor: pointer;
+    transition:color 0.4s;
+}
+
+.btn-delete-user:hover
+{
+    color:red;
+}
+
+.w-90
+{
+    width:90%;
+}
+
+
+#error-message-popup
+{
+    position:fixed;
+    width:fit-content;
+    color:white;
+    background-color: rgb(131, 0, 0);
+    bottom:15px;
+    right:15px;
+    z-index:5000;
+}
+
+#error-message
+{
+    margin-bottom:0;
+    padding:1rem;
+}
+
+.line-infos{
+    min-height:60%;
+}
+
+/* The switch - the box around the slider */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+  }
+  
+  /* Hide default HTML checkbox */
+  .switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+  
+  /* The slider */
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    -webkit-transition: .4s;
+    transition: .4s;
+  }
+  
+  .slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+  }
+  
+  input + .slider {
+    background-color: #2196F3;
+  }
+  
+  input + .slider {
+    box-shadow: 0 0 1px #2196F3;
+  }
+  
+  input:checked + .slider:before {
+    -webkit-transform: translateX(26px);
+    -ms-transform: translateX(26px);
+    transform: translateX(26px);
+  }
+  
+  /* Rounded sliders */
+  .slider.round {
+    border-radius: 34px;
+  }
+  
+  .slider.round:before {
+    border-radius: 50%;
+  }
+
+
+
+

@@ -1,0 +1,36 @@
+.masthead
+{
+    background-color:rgb(255,255,255) !important;
+    color:black !important;
+}
+
+.errorlist
+{
+    list-style: none;
+    color:red;
+    margin-bottom:0;
+    padding-left:5px;
+}
+
+.submit-button
+{
+    display:inline-block;
+    margin:auto;
+    background-color:rgb(100, 2, 156);
+    border-color:rgb(100,2,156);
+    margin-top:30px;
+}
+
+.submit-button:hover, .submit-button:focus, .submit-button:active
+{
+    background-color:rgb(118, 3, 185)!important;
+    border-color:rgb(118, 3, 185)!important;
+}
+
+.main-title
+{
+    width:fit-content;
+    margin:auto;
+    margin-bottom:15px;
+    color:rgb(93, 105, 107);
+}

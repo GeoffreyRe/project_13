@@ -1,0 +1,41 @@
+header.masthead
+{
+    background-image:url("../images/background_dark.jpg");
+}
+
+
+.btn-primary
+{
+    background-color:rgb(14, 165, 224) !important;
+    border-color:rgb(14, 165, 224) !important;
+}
+
+.btn-primary:active,.btn-primary:focus, .btn-primary:hover
+{
+    background-color:rgb(12, 131, 179) !important;
+    border-color:rgb(12, 131, 179) !important;
+}
+
+.popup-style-div
+{
+    position:fixed;
+    bottom:0;
+    left:0;
+    z-index: 10;
+    color:white;
+    background-color:green;
+    margin-left:0.5rem;
+    padding-right:0.2rem;
+    padding-left: 0.2rem;
+
+}
+
+#cross-button-close
+{
+    cursor:pointer;
+}
+
+.display-none
+{
+    display:none !important;
+}

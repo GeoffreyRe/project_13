@@ -1,0 +1,1 @@
+web: gunicorn odoo_translations.wsgi --chdir odoo_translations

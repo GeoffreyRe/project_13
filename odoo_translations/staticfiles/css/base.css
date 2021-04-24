@@ -1,0 +1,37 @@
+.masthead
+{
+    min-height:calc(100vh - 6rem - 19.2px);
+    padding-top:0 !important;
+}
+
+.navbar-static{
+    position: static !important;
+}
+
+
+
+
+@media (min-width: 570px){
+    .inner-container{
+        width: 100%;
+    }
+}
+
+@media (min-width: 768px){
+    .inner-container{
+        width: 420px;
+    }
+
+}
+
+@media (min-width: 992px){
+    .inner-container{
+        width: 660px;
+    }
+}
+
+@media (min-width: 1200px){
+    .inner-container{
+        width: 840px;
+    }
+}
