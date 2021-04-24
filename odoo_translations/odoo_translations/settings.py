@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
+import django_heroku
 from dotenv import load_dotenv
 
 #allows environments variables stored in a .env file to be loaded
@@ -167,3 +168,6 @@ LOGGING = {
         'level': 'WARNING',
     },
 }
+
+if not DEBUG:
+    django_heroku.settings(locals())
