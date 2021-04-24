@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Mentions légales{% endblock %}
+{% block css_links %}
+
+<link href="{% static 'pages/css/home.css' %}" rel="stylesheet">
+
+{% endblock %}
+
+{% block content %}
+
+<section id="legal_notice_div" style="height:80vh;">
+    <div class="container text-center">
+      <h2 class="h4 pt-5 text-center">Mentions légales</h2>
+      <p>Cette application a été développée par Geoffrey Remacle</p>
+      <p>Cetta application est déployée sur Heroku (Paas)</p>
+      <p>Tous les logos présents sont disponibles sur Font awesome</p>
+      <p>Les photos relatives à Odoo SA appartiennent à Odoo SA</p>
+      <p>Toutes les autres photos sont libres de droit</p>
+    </div>
+  </section>
+
+{% endblock %}
+
+{% block javascript_files %}
+<script src="{% static 'pages/js/home.js' %}"></script>
+{% endblock %}
