@@ -33,7 +33,7 @@ if os.environ.get("ENV", "development") == "production":
 else:
     DEBUG = True
 
-ALLOWED_HOSTS = ['odoo-translations-gr.herokuapp.com']
+ALLOWED_HOSTS = ['odoo-translations-gr.herokuapp.com', 'localhost']
 
 
 # Application definition
