@@ -7,7 +7,7 @@ Ce projet est le dernier projet de ma formation de développeur d'application en
 
 ## 1.1 Description du projet
 -----------------------------
-Le sujet du projet est libre mais il a pour but d'aider une communauté spécifique. J'ai donc décidé de créer une application de gestion des traductions Odoo.
+Le sujet du projet est libre mais il a pour but d'aider une communauté spécifique. J'ai donc décidé de créer une application de gestion des traductions Odoo afin d'aider la communauté des développeurs Odoo.
   
 
 ## 1.2 Fonctionnalités du projet
