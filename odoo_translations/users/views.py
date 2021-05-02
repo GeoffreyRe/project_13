@@ -46,9 +46,6 @@ def view_login(request):
         # on tente de loger l'utilisateur avec les données
         user_form_login = UserFormLogin(request.POST)
 
-        """
-        Je ne pense pas que ce soit la meilleure méthode : Voir avec Thierry
-        """
         user = authenticate(
             email=request.POST['email'], password=request.POST['password']
         )
